@@ -1,0 +1,81 @@
+<svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; font-family: sans-serif;">
+  <g class="zone-group" data-zone="STAGE" data-label="undefined">
+    <path d="M 300,200 L 700,200 L 700,200#d1d5db L 300,200#d1d5db Z" fill="#6b7280" />
+
+    <path d="M 350,100 L 650,100 L 700,200 L 300,200 Z" fill="#9ca3af" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="VIP" data-label="undefined">
+    <path d="M 320,270 L 510,270 L 510,270#ef4444 L 320,270#ef4444 Z" fill="#b91c1c" />
+
+    <path d="M 340,220 L 490,220 L 510,270 L 320,270 Z" fill="#dc2626" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="VIP" data-label="undefined">
+    <path d="M 490,270 L 680,270 L 680,270#ef4444 L 490,270#ef4444 Z" fill="#b91c1c" />
+
+    <path d="M 510,220 L 660,220 L 680,270 L 490,270 Z" fill="#dc2626" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Khusus" data-label="undefined">
+    <path d="M 240,360 L 490,360 L 490,360#22c55e L 240,360#22c55e Z" fill="#15803d" />
+
+    <path d="M 280,290 L 470,290 L 490,360 L 240,360 Z" fill="#16a34a" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Khusus" data-label="undefined">
+    <path d="M 510,360 L 760,360 L 760,360#22c55e L 510,360#22c55e Z" fill="#15803d" />
+
+    <path d="M 530,290 L 720,290 L 760,360 L 510,360 Z" fill="#16a34a" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas N1" data-label="Class I (North)">
+    <path d="M 220,270 L 300,270 L 300,290 L 220,290 Z" fill="#2563eb" />
+    <path d="M 260,220 L 220,270 L 220,290 L 260,240 Z" fill="#1d4ed8" />
+    <path d="M 160,360 L 260,360 L 260,380 L 160,380 Z" fill="#2563eb" />
+    <path d="M 220,270 L 160,360 L 160,380 L 220,290 Z" fill="#1d4ed8" />
+    <path d="M 260,220 L 320,220 L 300,270 L 220,270 Z" fill="#3b82f6" class="zone-top" />
+    <path d="M 220,270 L 300,270 L 260,360 L 160,360 Z" fill="#3b82f6" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas S1" data-label="Class I (South)">
+    <path d="M 700,270 L 780,270 L 780,290 L 700,290 Z" fill="#2563eb" />
+    <path d="M 740,220 L 780,270 L 780,290 L 740,240 Z" fill="#1d4ed8" />
+    <path d="M 740,360 L 840,360 L 840,380 L 740,380 Z" fill="#2563eb" />
+    <path d="M 780,270 L 840,360 L 840,380 L 780,290 Z" fill="#1d4ed8" />
+    <path d="M 680,220 L 740,220 L 780,270 L 700,270 Z" fill="#3b82f6" class="zone-top" />
+    <path d="M 700,270 L 780,270 L 840,360 L 740,360 Z" fill="#3b82f6" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas N2 C" data-label="Class II (North)">
+    <path d="M 120,270 L 200,270 L 200,290 L 120,290 Z" fill="#ca8a04" />
+    <path d="M 180,220 L 120,270 L 120,290 L 180,240 Z" fill="#a16207" />
+    <path d="M 60,360 L 160,360 L 160,380 L 60,380 Z" fill="#ca8a04" />
+    <path d="M 120,270 L 60,360 L 60,380 L 120,290 Z" fill="#a16207" />
+    <path d="M 80,440 L 220,440 L 220,460 L 80,460 Z" fill="#ca8a04" />
+    <path d="M 60,360 L 80,440 L 80,460 L 60,380 Z" fill="#a16207" />
+    <path d="M 180,220 L 240,220 L 200,270 L 120,270 Z" fill="#eab308" class="zone-top" />
+    <path d="M 120,270 L 200,270 L 160,360 L 60,360 Z" fill="#eab308" class="zone-top" />
+    <path d="M 60,360 L 160,360 L 220,440 L 80,440 Z" fill="#eab308" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas S2 C" data-label="Class II (South)">
+    <path d="M 800,270 L 880,270 L 880,290 L 800,290 Z" fill="#ca8a04" />
+    <path d="M 820,220 L 880,270 L 880,290 L 820,240 Z" fill="#a16207" />
+    <path d="M 840,360 L 940,360 L 940,380 L 840,380 Z" fill="#ca8a04" />
+    <path d="M 880,270 L 940,360 L 940,380 L 880,290 Z" fill="#a16207" />
+    <path d="M 780,440 L 920,440 L 920,460 L 780,460 Z" fill="#ca8a04" />
+    <path d="M 940,360 L 920,440 L 920,460 L 940,380 Z" fill="#a16207" />
+    <path d="M 760,220 L 820,220 L 880,270 L 800,270 Z" fill="#eab308" class="zone-top" />
+    <path d="M 800,270 L 880,270 L 940,360 L 840,360 Z" fill="#eab308" class="zone-top" />
+    <path d="M 840,360 L 940,360 L 920,440 L 780,440 Z" fill="#eab308" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Free Seating N" data-label="Free Seating">
+    <path d="M 20,360 L 100,360 L 100,380 L 20,380 Z" fill="#9333ea" />
+    <path d="M 100,220 L 20,360 L 20,380 L 100,240 Z" fill="#7e22ce" />
+    <path d="M 0,490 L 220,490 L 220,510 L 0,510 Z" fill="#9333ea" />
+    <path d="M 20,360 L 0,490 L 0,510 L 20,380 Z" fill="#7e22ce" />
+    <path d="M 100,220 L 160,220 L 100,360 L 20,360 Z" fill="#a855f7" class="zone-top" />
+    <path d="M 20,360 L 100,360 L 220,490 L 0,490 Z" fill="#a855f7" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Free Seating S" data-label="Free Seating">
+    <path d="M 900,360 L 980,360 L 980,380 L 900,380 Z" fill="#9333ea" />
+    <path d="M 900,220 L 980,360 L 980,380 L 900,240 Z" fill="#7e22ce" />
+    <path d="M 780,490 L 1000,490 L 1000,510 L 780,510 Z" fill="#9333ea" />
+    <path d="M 980,360 L 1000,490 L 1000,510 L 980,380 Z" fill="#7e22ce" />
+    <path d="M 840,220 L 900,220 L 980,360 L 900,360 Z" fill="#a855f7" class="zone-top" />
+    <path d="M 900,360 L 980,360 L 1000,490 L 780,490 Z" fill="#a855f7" class="zone-top" />
+  </g>
+</svg>

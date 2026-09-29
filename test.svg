@@ -1,0 +1,67 @@
+<svg viewBox="-600 -100 1200 800" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; font-family: sans-serif;">
+  <g class="zone-group" data-zone="STAGE" data-label="STAGE">
+    <path d="M 129.9 -5.0 L 43.3 45.0 L 43.3 75.0 L 129.9 25.0 Z" fill="#6b7280" />
+    <path d="M -129.9 -55.0 L 43.3 45.0 L 43.3 75.0 L -129.9 -25.0 Z" fill="#9ca3af" />
+    <path d="M -43.3 -105.0 L 129.9 -5.0 L 43.3 45.0 L -129.9 -55.0 Z" fill="#d1d5db" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="VIP" data-label="VIP">
+    <path d="M 112.6 105.0 L 43.3 145.0 L 43.3 165.0 L 112.6 125.0 Z" fill="#b91c1c" />
+    <path d="M -77.9 75.0 L 43.3 145.0 L 43.3 165.0 L -77.9 95.0 Z" fill="#dc2626" />
+    <path d="M -8.7 35.0 L 112.6 105.0 L 43.3 145.0 L -77.9 75.0 Z" fill="#ef4444" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="VIP" data-label="VIP">
+    <path d="M -95.3 -15.0 L -164.5 25.0 L -164.5 45.0 L -95.3 5.0 Z" fill="#b91c1c" />
+    <path d="M -285.8 -45.0 L -164.5 25.0 L -164.5 45.0 L -285.8 -25.0 Z" fill="#dc2626" />
+    <path d="M -216.5 -85.0 L -95.3 -15.0 L -164.5 25.0 L -285.8 -45.0 Z" fill="#ef4444" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Khusus S" data-label="Khusus">
+    <path d="M -34.6 115.0 L -121.2 165.0 L -121.2 180.0 L -34.6 130.0 Z" fill="#15803d" />
+    <path d="M -207.8 115.0 L -121.2 165.0 L -121.2 180.0 L -207.8 130.0 Z" fill="#16a34a" />
+    <path d="M -121.2 65.0 L -34.6 115.0 L -121.2 165.0 L -207.8 115.0 Z" fill="#22c55e" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Khusus N" data-label="Khusus">
+    <path d="M -138.6 55.0 L -225.2 105.0 L -225.2 120.0 L -138.6 70.0 Z" fill="#15803d" />
+    <path d="M -311.8 55.0 L -225.2 105.0 L -225.2 120.0 L -311.8 70.0 Z" fill="#16a34a" />
+    <path d="M -225.2 5.0 L -138.6 55.0 L -225.2 105.0 L -311.8 55.0 Z" fill="#22c55e" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas S1" data-label="Class I (South)">
+    <path d="M 216.5 60.0 L -43.3 210.0 L -43.3 225.0 L 216.5 75.0 Z" fill="#1d4ed8" />
+    <path d="M -112.6 170.0 L -43.3 210.0 L -43.3 225.0 L -112.6 185.0 Z" fill="#2563eb" />
+    <path d="M 147.2 20.0 L 216.5 60.0 L -43.3 210.0 L -112.6 170.0 Z" fill="#3b82f6" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas N1" data-label="Class I (North)">
+    <path d="M -60.6 -100.0 L -320.4 50.0 L -320.4 65.0 L -60.6 -85.0 Z" fill="#1d4ed8" />
+    <path d="M -389.7 10.0 L -320.4 50.0 L -320.4 65.0 L -389.7 25.0 Z" fill="#2563eb" />
+    <path d="M -129.9 -140.0 L -60.6 -100.0 L -320.4 50.0 L -389.7 10.0 Z" fill="#3b82f6" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas S2 C" data-label="Class II (South)">
+    <path d="M 285.8 105.0 L -34.6 290.0 L -34.6 300.0 L 285.8 115.0 Z" fill="#a16207" />
+    <path d="M -95.3 255.0 L -34.6 290.0 L -34.6 300.0 L -95.3 265.0 Z" fill="#ca8a04" />
+    <path d="M 225.2 70.0 L 285.8 105.0 L -34.6 290.0 L -95.3 255.0 Z" fill="#eab308" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas S2 C" data-label="Class II (South)">
+    <path d="M -43.3 225.0 L -95.3 255.0 L -95.3 265.0 L -43.3 235.0 Z" fill="#a16207" />
+    <path d="M -173.2 210.0 L -95.3 255.0 L -95.3 265.0 L -173.2 220.0 Z" fill="#ca8a04" />
+    <path d="M -121.2 180.0 L -43.3 225.0 L -95.3 255.0 L -173.2 210.0 Z" fill="#eab308" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas N2 C" data-label="Class II (North)">
+    <path d="M -138.6 -140.0 L -459.0 45.0 L -459.0 55.0 L -138.6 -130.0 Z" fill="#a16207" />
+    <path d="M -519.6 10.0 L -459.0 45.0 L -459.0 55.0 L -519.6 20.0 Z" fill="#ca8a04" />
+    <path d="M -199.2 -175.0 L -138.6 -140.0 L -459.0 45.0 L -519.6 10.0 Z" fill="#eab308" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Klas N2 C" data-label="Class II (North)">
+    <path d="M -329.1 60.0 L -381.1 90.0 L -381.1 100.0 L -329.1 70.0 Z" fill="#a16207" />
+    <path d="M -459.0 45.0 L -381.1 90.0 L -381.1 100.0 L -459.0 55.0 Z" fill="#ca8a04" />
+    <path d="M -407.0 15.0 L -329.1 60.0 L -381.1 90.0 L -459.0 45.0 Z" fill="#eab308" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Free Seating S" data-label="Free Seating">
+    <path d="M 346.4 145.0 L 26.0 330.0 L 26.0 335.0 L 346.4 150.0 Z" fill="#7e22ce" />
+    <path d="M -26.0 300.0 L 26.0 330.0 L 26.0 335.0 L -26.0 305.0 Z" fill="#9333ea" />
+    <path d="M 294.4 115.0 L 346.4 145.0 L 26.0 330.0 L -26.0 300.0 Z" fill="#a855f7" class="zone-top" />
+  </g>
+  <g class="zone-group" data-zone="Free Seating N" data-label="Free Seating">
+    <path d="M -207.8 -175.0 L -528.3 10.0 L -528.3 15.0 L -207.8 -170.0 Z" fill="#7e22ce" />
+    <path d="M -580.2 -20.0 L -528.3 10.0 L -528.3 15.0 L -580.2 -15.0 Z" fill="#9333ea" />
+    <path d="M -259.8 -205.0 L -207.8 -175.0 L -528.3 10.0 L -580.2 -20.0 Z" fill="#a855f7" class="zone-top" />
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+<svg viewBox="0 0 1000 600" width="800" height="480" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the isometric projection -->
+  <!-- rotate(45) then scale Y by 0.5. But we want it to match image 2, where stage is rotated maybe slightly differently. -->
+  <!-- Let's just use standard isometric: scale(1, 0.577) rotate(45) -->
+  
+  <g transform="translate(500, 100) scale(1, 0.5) rotate(45)">
+    <!-- Stage Side (Darker) -->
+    <rect x="-100" y="-100" width="200" height="150" fill="#9ca3af" transform="translate(-10, 10)" />
+    <!-- Stage Top -->
+    <rect x="-100" y="-100" width="200" height="150" fill="#d1d5db" />
+  </g>
+</svg>
