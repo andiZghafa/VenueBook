@@ -1,0 +1,53 @@
+{
+  "_fonts-D6CVZc8_.css": {
+    "file": "assets/fonts-D6CVZc8_.css",
+    "src": "_fonts-D6CVZc8_.css"
+  },
+  "_open-sans-400-normal-Bk63H6sG.woff2": {
+    "file": "assets/open-sans-400-normal-Bk63H6sG.woff2",
+    "src": "_open-sans-400-normal-Bk63H6sG.woff2"
+  },
+  "_open-sans-400-normal-DKniycaP.woff": {
+    "file": "assets/open-sans-400-normal-DKniycaP.woff",
+    "src": "_open-sans-400-normal-DKniycaP.woff"
+  },
+  "_open-sans-600-normal-C3dWW5mx.woff": {
+    "file": "assets/open-sans-600-normal-C3dWW5mx.woff",
+    "src": "_open-sans-600-normal-C3dWW5mx.woff"
+  },
+  "_open-sans-600-normal-Cp4N6AwT.woff2": {
+    "file": "assets/open-sans-600-normal-Cp4N6AwT.woff2",
+    "src": "_open-sans-600-normal-Cp4N6AwT.woff2"
+  },
+  "_open-sans-700-normal-CZCQA30i.woff": {
+    "file": "assets/open-sans-700-normal-CZCQA30i.woff",
+    "src": "_open-sans-700-normal-CZCQA30i.woff"
+  },
+  "_open-sans-700-normal-CceUhp2e.woff2": {
+    "file": "assets/open-sans-700-normal-CceUhp2e.woff2",
+    "src": "_open-sans-700-normal-CceUhp2e.woff2"
+  },
+  "_open-sans-800-normal-C0t39IfQ.woff2": {
+    "file": "assets/open-sans-800-normal-C0t39IfQ.woff2",
+    "src": "_open-sans-800-normal-C0t39IfQ.woff2"
+  },
+  "_open-sans-800-normal-w4vykUBk.woff": {
+    "file": "assets/open-sans-800-normal-w4vykUBk.woff",
+    "src": "_open-sans-800-normal-w4vykUBk.woff"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-D-IVcql3.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CMM-b_cO.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
