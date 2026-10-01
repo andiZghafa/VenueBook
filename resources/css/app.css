@@ -125,9 +125,9 @@ html.sidebar-collapsed .sidebar-toggle {
     color: #000;
     text-decoration: none;
     white-space: nowrap;
-    margin: 4px 0 26px;
+    margin: -4px 0 26px;
     min-width: 0;
-    padding: 8px 6px 4px;
+    padding: 0 6px 4px;
 }
 
 .brand-logo {
@@ -145,7 +145,7 @@ html.sidebar-collapsed .sidebar-toggle {
 
 html.sidebar-collapsed .brand {
     justify-content: center;
-    padding: 8px 0;
+    padding: 0 0 4px;
 }
 
 html.sidebar-collapsed .brand-logo.logo-full {
