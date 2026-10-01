@@ -121,14 +121,13 @@
                                 <span class="day-warn-badge" title="Ada event yang sedang loading/unloading">⚠️</span>
                             @endif
                         </div>
-                        @foreach ($cell['events']->take(3) as $event)
-                            <div class="event {{ $event->status }}" title="{{ $event->venue->destination->name }} — {{ $event->title }}" onclick="showDetail({{ $event->id }})">
-                                {{ $event->title }}
-                            </div>
-                        @endforeach
-                        @if ($cell['events']->count() > 3)
-                            <div style="font-size:10px;color:var(--muted);margin-top:2px">+{{ $cell['events']->count() - 3 }} lainnya</div>
-                        @endif
+                        <div class="events-list">
+                            @foreach ($cell['events'] as $event)
+                                <div class="event {{ $event->status }}" title="{{ $event->venue->destination->name }} — {{ $event->title }}" onclick="showDetail({{ $event->id }})">
+                                    {{ $event->title }}
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 @endforeach
             </div>

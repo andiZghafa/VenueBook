@@ -699,6 +699,24 @@ html.sidebar-collapsed .user-card {
     color: #000;
 }
 
+.events-list {
+    max-height: 95px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+    padding-right: 2px;
+}
+
+.events-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.events-list::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
+
 .event {
     display: block;
     font-size: 11px;

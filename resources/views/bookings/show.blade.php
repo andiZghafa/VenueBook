@@ -6,7 +6,7 @@
 
     <div class="topbar">
         <div class="title">
-            <p style="margin:0 0 4px;font-size:12px;color:var(--muted)"><a href="{{ route('bookings.index') }}">Daftar Event</a> / {{ $booking->code }}</p>
+            <p style="margin:0 0 4px;font-size:12px;color:var(--muted)"><a href="{{ session('last_booking_index_url', route('bookings.index')) }}">Daftar Event</a> / {{ $booking->code }}</p>
             <h1>{{ $booking->title }}</h1>
         </div>
         <div class="actions">

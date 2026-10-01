@@ -26,6 +26,8 @@ class BookingController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        session(['last_booking_index_url' => $request->fullUrl()]);
+
         return view('bookings.index', [
             'bookings' => $bookings,
             'filters' => $filters,
@@ -120,7 +122,8 @@ class BookingController extends Controller
 
         $booking->delete();
 
-        return redirect()->route('bookings.index')->with('success', "Event \"{$booking->title}\" berhasil dihapus.");
+        return redirect(session('last_booking_index_url', route('bookings.index')))
+            ->with('success', "Event \"{$booking->title}\" berhasil dihapus.");
     }
 
     /**
