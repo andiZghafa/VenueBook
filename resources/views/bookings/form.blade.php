@@ -27,7 +27,7 @@
     </div>
 
     <section class="panel form-card">
-        <form method="POST" action="{{ $booking->exists ? route('bookings.update', $booking) : route('bookings.store') }}">
+        <form id="bookingForm" method="POST" action="{{ $booking->exists ? route('bookings.update', $booking) : route('bookings.store') }}">
             @csrf
             @if ($booking->exists)
                 @method('PUT')
@@ -102,13 +102,12 @@
 
                 <div class="field">
                     <label>Klien / Organizer</label>
-                    <select name="client_id">
-                        <option value="">— Tidak ada / Internal —</option>
+                    <input type="text" name="client_name" list="clientList" value="{{ old('client_name', $booking->client?->name) }}" placeholder="Ketik nama klien atau pilih dari daftar..." autocomplete="off">
+                    <datalist id="clientList">
                         @foreach ($clients as $c)
-                            <option value="{{ $c->id }}" @selected(old('client_id', $booking->client_id) == $c->id)>{{ $c->name }}</option>
+                            <option value="{{ $c->name }}"></option>
                         @endforeach
-                    </select>
-                    <div style="margin-top:6px"><a href="{{ route('clients.create') }}" target="_blank" style="font-size:12px;color:var(--primary-hover);font-weight:700">+ Tambah klien baru (tab baru)</a></div>
+                    </datalist>
                 </div>
 
                 <div class="field">
@@ -148,6 +147,18 @@
             </div>
         </form>
     </section>
+
+    <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:24px; border-radius:12px; width:400px; max-width:90%; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-top:0;">Konfirmasi Event</h3>
+            <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Mohon periksa kembali detail event berikut:</p>
+            <div id="summaryContent" style="margin-bottom:24px; font-size:13px; line-height:1.6; color:#000;"></div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" class="btn" onclick="document.getElementById('confirmModal').style.display='none'">Kembali</button>
+                <button type="button" class="btn primary" onclick="document.getElementById('bookingForm').submit()">Konfirmasi & Simpan</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const VENUE_INFO = @json($venueInfo);
@@ -190,6 +201,35 @@
         }
 
         onVenueChange();
+
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            // Check HTML5 validity so it doesn't show modal if fields are missing
+            if (!this.checkValidity()) return;
+
+            if (document.getElementById('confirmModal').style.display === 'none') {
+                e.preventDefault();
+                
+                const title = this.title.value;
+                const venue = this.venue_id.options[this.venue_id.selectedIndex]?.text || '-';
+                const type = this.event_type_id.options[this.event_type_id.selectedIndex]?.text || '-';
+                const startDate = this.start_date.value;
+                const endDate = this.end_date.value;
+                const client = this.client_name.value || 'Internal / Tidak ada';
+                
+                let html = `
+                    <div style="display:grid; grid-template-columns: 100px 1fr; gap:8px;">
+                        <strong style="color:var(--muted)">Nama:</strong> <span>${title}</span>
+                        <strong style="color:var(--muted)">Venue:</strong> <span>${venue}</span>
+                        <strong style="color:var(--muted)">Jenis:</strong> <span>${type}</span>
+                        <strong style="color:var(--muted)">Klien:</strong> <span>${client}</span>
+                        <strong style="color:var(--muted)">Tanggal:</strong> <span>${startDate} s/d ${endDate}</span>
+                    </div>
+                `;
+                
+                document.getElementById('summaryContent').innerHTML = html;
+                document.getElementById('confirmModal').style.display = 'flex';
+            }
+        });
     </script>
 
 @endsection

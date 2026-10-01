@@ -173,6 +173,14 @@ class BookingController extends Controller
      */
     private function validateBooking(Request $request, ?Booking $booking = null): array
     {
+        $clientName = $request->input('client_name');
+        if (!empty($clientName)) {
+            $client = \App\Models\Client::firstOrCreate(['name' => $clientName]);
+            $request->merge(['client_id' => $client->id]);
+        } else {
+            $request->merge(['client_id' => null]);
+        }
+
         return $request->validate([
             'venue_id' => ['required', 'exists:venues,id'],
             'event_type_id' => ['required', 'exists:event_types,id'],
