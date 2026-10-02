@@ -38,8 +38,10 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', "Akun \"{$data['name']}\" berhasil dibuat.");
     }
 
-    public function edit(User $user): View
+    public function edit(Request $request, User $user): View
     {
+        abort_if(! $request->user()->isSuperAdmin() && $user->isSuperAdmin(), 403, 'Anda tidak dapat mengedit Super Admin.');
+
         return view('users.form', [
             'user' => $user,
             'destinations' => Destination::orderBy('name')->get(),
@@ -48,6 +50,8 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        abort_if(! $request->user()->isSuperAdmin() && $user->isSuperAdmin(), 403, 'Anda tidak dapat mengedit Super Admin.');
+
         $data = $this->validateUser($request, passwordRequired: false, ignoreUserId: $user->id);
 
         if (! empty($data['password'])) {
@@ -64,6 +68,7 @@ class UserController extends Controller
     public function destroy(Request $request, User $user): RedirectResponse
     {
         abort_if($request->user()->is($user), 403, 'Anda tidak dapat menghapus akun Anda sendiri.');
+        abort_if(! $request->user()->isSuperAdmin() && $user->isSuperAdmin(), 403, 'Anda tidak dapat menghapus Super Admin.');
 
         $user->delete();
 
@@ -78,12 +83,16 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$ignoreUserId],
-            'role' => ['required', 'in:admin,sales'],
+            'role' => ['required', 'in:superadmin,admin,sales'],
             'destination_id' => ['nullable', 'required_if:role,sales', 'exists:destinations,id'],
             'password' => [$passwordRequired ? 'required' : 'nullable', 'string', 'min:8'],
         ]);
 
-        if ($data['role'] === 'admin') {
+        if (! $request->user()->isSuperAdmin() && $data['role'] === 'superadmin') {
+            abort(403, 'Anda tidak dapat memberikan peran Super Admin.');
+        }
+
+        if (in_array($data['role'], ['admin', 'superadmin'])) {
             $data['destination_id'] = null;
         }
 

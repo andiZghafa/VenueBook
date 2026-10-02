@@ -35,9 +35,14 @@ class User extends Authenticatable
         return $this->hasMany(Booking::class, 'pic_user_id');
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'superadmin']);
     }
 
     /**

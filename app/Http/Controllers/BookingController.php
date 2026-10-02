@@ -34,7 +34,7 @@ class BookingController extends Controller
             'destinations' => Destination::orderBy('name')->get(),
             'venues' => Venue::with('destination')->orderBy('name')->get(),
             'eventTypes' => EventType::orderBy('name')->get(),
-            'salesUsers' => User::orderBy('name')->get(),
+            'salesUsers' => User::where('role', '!=', 'superadmin')->orderBy('name')->get(),
         ]);
     }
 
@@ -59,7 +59,7 @@ class BookingController extends Controller
             'venueInfo' => $this->venueInfo($venues),
             'eventTypes' => EventType::orderBy('name')->get(),
             'clients' => Client::orderBy('name')->get(),
-            'salesUsers' => User::orderBy('name')->get(),
+            'salesUsers' => User::where('role', '!=', 'superadmin')->orderBy('name')->get(),
             'seatedOnly' => $seatedOnly,
         ]);
     }
@@ -99,7 +99,7 @@ class BookingController extends Controller
             'venueInfo' => $this->venueInfo($venues),
             'eventTypes' => EventType::orderBy('name')->get(),
             'clients' => Client::orderBy('name')->get(),
-            'salesUsers' => User::orderBy('name')->get(),
+            'salesUsers' => User::where('role', '!=', 'superadmin')->orderBy('name')->get(),
             'seatedOnly' => false,
         ]);
     }

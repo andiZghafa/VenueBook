@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('clients/create', [ClientController::class, 'create'])->name('clients.create');
     Route::post('clients', [ClientController::class, 'store'])->name('clients.store');
 
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware('role:admin,superadmin')->group(function () {
         Route::get('venues', [VenueController::class, 'index'])->name('venues.index');
         Route::get('venues/create', [VenueController::class, 'create'])->name('venues.create');
         Route::post('venues', [VenueController::class, 'store'])->name('venues.store');

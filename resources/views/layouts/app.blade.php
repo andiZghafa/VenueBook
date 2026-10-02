@@ -38,7 +38,7 @@
                 </span>
                 <div class="user-info nav-label">
                     <b>{{ auth()->user()->name }}</b>
-                    <span>{{ auth()->user()->isAdmin() ? 'Admin' : 'Sales — '.auth()->user()->destination?->name }}</span>
+                    <span>{{ auth()->user()->isSuperAdmin() ? 'Super Admin' : (auth()->user()->isAdmin() ? 'Admin' : 'Sales — '.auth()->user()->destination?->name) }}</span>
                     <span class="badge-role">{{ auth()->user()->role }}</span>
                 </div>
             </div>

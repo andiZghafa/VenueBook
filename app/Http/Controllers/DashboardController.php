@@ -105,7 +105,7 @@ class DashboardController extends Controller
             'destinations' => $destinations,
             'venues' => $venues,
             'eventTypes' => EventType::orderBy('name')->get(),
-            'salesUsers' => User::orderBy('name')->get(),
+            'salesUsers' => User::where('role', '!=', 'superadmin')->orderBy('name')->get(),
             'filters' => $filters,
             'eventDetails' => $eventDetails,
             'kpis' => [

@@ -34,9 +34,12 @@
                     <select name="role" id="role" onchange="document.getElementById('destination-field').style.display = this.value === 'sales' ? '' : 'none'">
                         <option value="sales" @selected(old('role', $user->role) === 'sales')>Sales</option>
                         <option value="admin" @selected(old('role', $user->role) === 'admin')>Admin</option>
+                        @if (auth()->user()->isSuperAdmin() || $user->isSuperAdmin())
+                            <option value="superadmin" @selected(old('role', $user->role) === 'superadmin')>Super Admin</option>
+                        @endif
                     </select>
                 </div>
-                <div class="field" id="destination-field" style="display:{{ old('role', $user->role) === 'admin' ? 'none' : '' }}">
+                <div class="field" id="destination-field" style="display:{{ in_array(old('role', $user->role), ['admin', 'superadmin']) ? 'none' : '' }}">
                     <label>Destinasi (unit sales)</label>
                     <select name="destination_id">
                         <option value="">— Pilih Destinasi —</option>
