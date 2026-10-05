@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Klien')
+@section('title', 'Tambah Client')
 
 @section('content')
 
     <div class="topbar">
         <div class="title">
-            <h1>Tambah Klien / Organizer</h1>
+            <h1>Tambah Client/Organizer</h1>
             <p>Data ini akan tersedia sebagai pilihan saat membuat event.</p>
         </div>
     </div>
@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn primary">Simpan Klien</button>
+                <button type="submit" class="btn primary">Simpan Client</button>
                 <a href="{{ route('clients.index') }}" class="btn">Batal</a>
             </div>
         </form>

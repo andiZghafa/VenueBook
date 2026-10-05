@@ -17,7 +17,7 @@
         <form method="GET" action="{{ route('bookings.index') }}" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;padding:16px">
             <div class="field" style="min-width:200px;margin:0">
                 <label>Cari</label>
-                <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, klien, venue...">
+                <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client, venue...">
             </div>
             <div class="field" style="min-width:180px;margin:0">
                 <label>Destinasi</label>
@@ -63,7 +63,7 @@
     <section class="panel table-card">
         <table class="table">
             <thead>
-                <tr><th>Kode</th><th>Tanggal</th><th>Destinasi</th><th>Venue</th><th>Nama Event</th><th>Status</th><th>PIC</th></tr>
+                <tr><th>Kode</th><th>Tanggal</th><th>Destinasi</th><th>Venue</th><th>Nama Event</th><th>Harga</th><th>Status</th><th>PIC</th></tr>
             </thead>
             <tbody>
                 @forelse ($bookings as $booking)
@@ -73,6 +73,7 @@
                         <td>{{ $booking->venue->destination->name }}</td>
                         <td>{{ $booking->venue->name }}</td>
                         <td>{{ $booking->title }}</td>
+                        <td>{{ $booking->price !== null ? 'Rp '.number_format($booking->price, 0, ',', '.') : '—' }}</td>
                         <td><span class="pill {{ $booking->status }}">{{ ucfirst($booking->status) }}</span></td>
                         <td>{{ $booking->pic?->name ?? '—' }}</td>
                     </tr>

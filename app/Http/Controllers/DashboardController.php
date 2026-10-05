@@ -24,6 +24,11 @@ class DashboardController extends Controller
         $destinations = Destination::orderBy('name')->get();
 
         $filters = $request->only(['destination_id', 'venue_id', 'event_type_id', 'status', 'pic_user_id', 'q']);
+        $user = $request->user();
+
+        if (! $request->has('destination_id') && $user->role === 'sales') {
+            $filters['destination_id'] = $user->destination_id;
+        }
 
         $venuesQuery = Venue::with('destination')->orderBy('name');
         if ($filters['destination_id'] ?? null) {
@@ -57,6 +62,10 @@ class DashboardController extends Controller
             ? min(100, round(($bookedVenueDays / ($venueCount * $daysInMonth)) * 100))
             : 0;
 
+        $expectedEarningFix = $monthBookings->where('status', 'fix')->sum('price');
+        $expectedEarningPipeline = $monthBookings->whereIn('status', ['hold', 'tentative'])->sum('price');
+        $expectedEarning = $expectedEarningFix + $expectedEarningPipeline;
+
         $warningIds = $bookings->filter(fn (Booking $b) => $b->isLoadingOrUnloading())->pluck('id');
 
         $calendar = [];
@@ -85,6 +94,7 @@ class DashboardController extends Controller
             'client' => $b->client?->name,
             'pic' => $b->pic?->name,
             'guestCount' => $b->guest_count,
+            'price' => $b->price !== null ? 'Rp ' . number_format($b->price, 0, ',', '.') : '-',
             'notes' => $b->notes,
             'dateLabel' => $b->start_date->eq($b->end_date)
                 ? $b->start_date->translatedFormat('d M Y')
@@ -114,6 +124,9 @@ class DashboardController extends Controller
                 'holdCount' => $monthBookings->where('status', 'hold')->count(),
                 'fixCount' => $monthBookings->where('status', 'fix')->count(),
                 'utilization' => $utilization,
+                'expectedEarning' => $expectedEarning,
+                'expectedEarningFix' => $expectedEarningFix,
+                'expectedEarningPipeline' => $expectedEarningPipeline,
             ],
             'recentBookings' => $monthBookings->sortBy('start_date')->take(8),
         ]);

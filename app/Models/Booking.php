@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 #[Fillable([
-    'code', 'venue_id', 'event_type_id', 'client_id', 'pic_user_id', 'created_by',
-    'title', 'start_date', 'end_date', 'load_at', 'unload_at', 'guest_count', 'status', 'notes',
+    'code', 'venue_id', 'event_type_id', 'client_id', 'organizer_id', 'pic_user_id', 'created_by',
+    'title', 'start_date', 'end_date', 'load_at', 'unload_at', 'guest_count', 'status', 'notes', 'price',
 ])]
 class Booking extends Model
 {
@@ -28,6 +28,7 @@ class Booking extends Model
             'end_date' => 'date',
             'load_at' => 'datetime',
             'unload_at' => 'datetime',
+            'price' => 'decimal:2',
         ];
     }
 
@@ -98,6 +99,14 @@ class Booking extends Model
     }
 
     /**
+     * @return BelongsTo<Client, $this>
+     */
+    public function organizer(): BelongsTo
+    {
+        return $this->belongsTo(Client::class, 'organizer_id');
+    }
+
+    /**
      * @return BelongsTo<User, $this>
      */
     public function pic(): BelongsTo
@@ -131,6 +140,7 @@ class Booking extends Model
                     $inner->where('title', 'like', "%{$term}%")
                         ->orWhere('code', 'like', "%{$term}%")
                         ->orWhereHas('client', fn ($c) => $c->where('name', 'like', "%{$term}%"))
+                        ->orWhereHas('organizer', fn ($c) => $c->where('name', 'like', "%{$term}%"))
                         ->orWhereHas('venue', fn ($v) => $v->where('name', 'like', "%{$term}%"));
                 });
             });

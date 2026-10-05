@@ -406,7 +406,7 @@ html.sidebar-collapsed .user-card {
 
 .kpis {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin: 18px 0;
 }
@@ -1235,4 +1235,89 @@ span.flatpickr-weekday {
 .flatpickr-input[readonly] {
     cursor: pointer;
     background: #fff;
+}
+
+/* Switch Component */
+.switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    user-select: none;
+}
+.switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.switch-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background-color: var(--line);
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+.switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.switch input:checked + .switch-track {
+    background-color: var(--primary);
+    border-color: var(--primary-hover);
+}
+.switch input:checked + .switch-track .switch-knob {
+    transform: translateX(20px);
+}
+.switch input:focus-visible + .switch-track {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+    .switch-track, .switch-knob {
+        transition: none;
+    }
+}
+
+/* Organizer Animation grid */
+.organizer-container {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+    transition: grid-template-columns 0.25s ease;
+}
+@media (min-width: 640px) {
+    .organizer-container.is-active {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+.organizer-col {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.25s ease, opacity 0.25s ease;
+}
+.organizer-col.is-active {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+.organizer-col-inner {
+    overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+    .organizer-container, .organizer-col {
+        transition: none;
+    }
 }

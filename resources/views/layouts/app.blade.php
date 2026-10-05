@@ -24,7 +24,7 @@
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Dashboard"><span class="nav-icon">▦</span><span class="nav-label">Dashboard</span></a>
             <a href="{{ route('bookings.index') }}" class="{{ request()->routeIs('bookings.*') && ! request()->routeIs('bookings.seats.*') ? 'active' : '' }}" title="Event"><span class="nav-icon">◫</span><span class="nav-label">Event</span></a>
             <a href="{{ route('seats.index') }}" class="{{ request()->routeIs('seats.*') || request()->routeIs('bookings.seats.*') ? 'active' : '' }}" title="Booking Kursi"><span class="nav-icon">🎟</span><span class="nav-label">Booking Kursi</span></a>
-            <a href="{{ route('clients.index') }}" class="{{ request()->routeIs('clients.*') ? 'active' : '' }}" title="Klien / Organizer"><span class="nav-icon">👥</span><span class="nav-label">Klien / Organizer</span></a>
+            <a href="{{ route('clients.index') }}" class="{{ request()->routeIs('clients.*') ? 'active' : '' }}" title="Client/Organizer"><span class="nav-icon">👥</span><span class="nav-label">Client/Organizer</span></a>
             @if (auth()->user()->isAdmin())
                 <a href="{{ route('venues.index') }}" class="{{ request()->routeIs('venues.*') ? 'active' : '' }}" title="Venue"><span class="nav-icon">⌖</span><span class="nav-label">Venue</span></a>
                 <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}" title="Pengguna"><span class="nav-icon">⚙</span><span class="nav-label">Pengguna</span></a>

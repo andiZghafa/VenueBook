@@ -100,14 +100,37 @@
                     </div>
                 </div>
 
-                <div class="field">
-                    <label>Klien / Organizer</label>
-                    <input type="text" name="client_name" list="clientList" value="{{ old('client_name', $booking->client?->name) }}" placeholder="Ketik nama klien atau pilih dari daftar..." autocomplete="off">
-                    <datalist id="clientList">
-                        @foreach ($clients as $c)
-                            <option value="{{ $c->name }}"></option>
-                        @endforeach
-                    </datalist>
+                <div class="field full">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
+                        <label id="clientLabel" aria-live="polite" style="margin-bottom:0;">Client/Organizer</label>
+                        <label class="switch" title="Gunakan organizer yang berbeda dengan client">
+                            <input type="checkbox" role="switch" aria-controls="organizerCol" aria-expanded="{{ old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id) ? 'true' : 'false' }}" name="is_separate_organizer" id="separateOrganizerToggle" value="1" @checked(old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id))>
+                            <div class="switch-track">
+                                <div class="switch-knob"></div>
+                            </div>
+                            <span>Client dan Organizer berbeda</span>
+                        </label>
+                    </div>
+                    <div class="organizer-container {{ old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id) ? 'is-active' : '' }}" id="organizerContainer">
+                        <div class="client-col">
+                            <input type="text" name="client_name" list="clientList" value="{{ old('client_name', $booking->client?->name) }}" placeholder="Ketik nama client atau pilih dari daftar..." autocomplete="off">
+                            <datalist id="clientList">
+                                @foreach ($clients as $c)
+                                    <option value="{{ $c->name }}"></option>
+                                @endforeach
+                            </datalist>
+                        </div>
+                        <div class="organizer-col {{ old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id) ? 'is-active' : '' }}" id="organizerCol">
+                            <div class="organizer-col-inner">
+                                <input type="text" name="organizer_name" id="organizerInput" list="organizerList" value="{{ old('organizer_name', $booking->organizer?->name) }}" placeholder="Ketik nama organizer..." autocomplete="off">
+                                <datalist id="organizerList">
+                                    @foreach ($clients as $c)
+                                        <option value="{{ $c->name }}"></option>
+                                    @endforeach
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="field">
@@ -124,6 +147,13 @@
                 <div class="field">
                     <label>Jumlah Tamu (estimasi)</label>
                     <input type="number" min="1" name="guest_count" value="{{ old('guest_count', $booking->guest_count) }}">
+                </div>
+
+                <div class="field">
+                    <label>Harga/Price (Rp)</label>
+                    <input type="text" id="priceInput" value="{{ old('price', $booking->price ? number_format($booking->price, 0, '', '.') : '') }}" placeholder="Contoh: 1.500.000" autocomplete="off" oninput="formatPrice(this)">
+                    <input type="hidden" name="price" id="priceHidden" value="{{ old('price', $booking->price) }}">
+                    @error('price') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="field">
@@ -202,6 +232,59 @@
 
         onVenueChange();
 
+        const separateToggle = document.getElementById('separateOrganizerToggle');
+        const organizerContainer = document.getElementById('organizerContainer');
+        const organizerCol = document.getElementById('organizerCol');
+        const organizerInput = document.getElementById('organizerInput');
+        const clientLabel = document.getElementById('clientLabel');
+        let savedOrganizerName = '';
+        
+        function toggleOrganizer(isInit = false) {
+            const isChecked = separateToggle.checked;
+            separateToggle.setAttribute('aria-expanded', isChecked);
+            
+            if (isChecked) {
+                organizerContainer.classList.add('is-active');
+                organizerCol.classList.add('is-active');
+                clientLabel.textContent = 'Client & Organizer';
+                
+                organizerInput.disabled = false;
+                if (!isInit && savedOrganizerName) {
+                    organizerInput.value = savedOrganizerName;
+                }
+            } else {
+                organizerContainer.classList.remove('is-active');
+                organizerCol.classList.remove('is-active');
+                clientLabel.textContent = 'Client/Organizer';
+                
+                if (!isInit) savedOrganizerName = organizerInput.value;
+                organizerInput.disabled = true;
+                
+                setTimeout(() => {
+                    if (!separateToggle.checked) {
+                        organizerInput.value = '';
+                    }
+                }, 250);
+            }
+        }
+        
+        if (separateToggle) {
+            separateToggle.addEventListener('change', () => toggleOrganizer(false));
+            savedOrganizerName = organizerInput.value;
+            toggleOrganizer(true);
+        }
+
+        function formatPrice(input) {
+            let value = input.value.replace(/[^0-9]/g, '');
+            if (value) {
+                document.getElementById('priceHidden').value = value;
+                input.value = new Intl.NumberFormat('id-ID').format(value);
+            } else {
+                document.getElementById('priceHidden').value = '';
+                input.value = '';
+            }
+        }
+
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
             // Check HTML5 validity so it doesn't show modal if fields are missing
             if (!this.checkValidity()) return;
@@ -214,15 +297,21 @@
                 const type = this.event_type_id.options[this.event_type_id.selectedIndex]?.text || '-';
                 const startDate = this.start_date.value;
                 const endDate = this.end_date.value;
-                const client = this.client_name.value || 'Internal / Tidak ada';
+                const client = this.client_name.value || 'Internal/Tidak ada';
+                const isSeparate = this.is_separate_organizer && this.is_separate_organizer.checked;
+                const organizer = isSeparate ? (this.organizer_name.value || 'Internal/Tidak ada') : client;
+                const priceVal = document.getElementById('priceHidden').value;
+                const price = priceVal ? 'Rp ' + new Intl.NumberFormat('id-ID').format(priceVal) : '-';
                 
                 let html = `
                     <div style="display:grid; grid-template-columns: 100px 1fr; gap:8px;">
                         <strong style="color:var(--muted)">Nama:</strong> <span>${title}</span>
                         <strong style="color:var(--muted)">Venue:</strong> <span>${venue}</span>
                         <strong style="color:var(--muted)">Jenis:</strong> <span>${type}</span>
-                        <strong style="color:var(--muted)">Klien:</strong> <span>${client}</span>
+                        <strong style="color:var(--muted)">Client:</strong> <span>${client}</span>
+                        ${isSeparate ? `<strong style="color:var(--muted)">Organizer:</strong> <span>${organizer}</span>` : ''}
                         <strong style="color:var(--muted)">Tanggal:</strong> <span>${startDate} s/d ${endDate}</span>
+                        <strong style="color:var(--muted)">Harga:</strong> <span>${price}</span>
                     </div>
                 `;
                 

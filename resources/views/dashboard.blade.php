@@ -20,6 +20,7 @@
         <div class="kpi"><small>Hold Request</small><strong>{{ $kpis['holdCount'] }}</strong><span class="up">Perlu follow-up sales</span></div>
         <div class="kpi"><small>Event Fix</small><strong>{{ $kpis['fixCount'] }}</strong><span class="up">Confirmed booking</span></div>
         <div class="kpi"><small>Tingkat Utilisasi</small><strong>{{ $kpis['utilization'] }}%</strong><span class="up">Estimasi venue-hari terpakai</span></div>
+        <div class="kpi"><small>Expected Earning</small><strong>Rp {{ number_format($kpis['expectedEarning'], 0, ',', '.') }}</strong><span class="up">Fix: Rp {{ number_format($kpis['expectedEarningFix'], 0, ',', '.') }} &middot; Pipeline: Rp {{ number_format($kpis['expectedEarningPipeline'], 0, ',', '.') }}</span></div>
     </section>
 
     <section class="panel filters-bar">
@@ -73,7 +74,7 @@
             </div>
             <div class="field">
                 <label>Cari</label>
-                <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, klien..." onchange="this.form.submit()">
+                <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client..." onchange="this.form.submit()">
             </div>
             <div class="field field-actions" style="flex: 0 0 auto; margin-left: auto;">
                 <a href="{{ route('dashboard', ['y' => $month->year, 'm' => $month->month]) }}" class="btn" title="Reset Filter" style="padding: 9px 12px; display: flex; align-items: center; border: 1.5px solid #94a3b8; color: #475569; border-radius: 8px; background: #f8fafc; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#64748b'; this.style.color='#1e293b';" onmouseout="this.style.borderColor='#94a3b8'; this.style.color='#475569';">
@@ -136,7 +137,7 @@
                 <span><i class="dot" style="background:#8b5cf6"></i>Tentative</span>
                 <span><i class="dot" style="background:var(--green)"></i>Fix</span>
                 <span><i class="dot" style="background:#ef4444"></i>Cancelled</span>
-                <span><i class="dot" style="background:#64748b"></i>Maintenance / Blackout</span>
+                <span><i class="dot" style="background:#64748b"></i>Maintenance/Blackout</span>
                 <span>⚠️ Tanggal dengan sorot oranye = ada event sedang loading/unloading</span>
             </div>
         </section>
@@ -222,6 +223,7 @@
             html += `<div>Status</div><div>${e.statusLabel}</div>`;
             html += `<div>PIC Sales</div><div>${e.pic ?? '—'}</div>`;
             html += `<div>Jumlah Tamu</div><div>${e.guestCount ? e.guestCount + ' orang' : '—'}</div>`;
+            html += `<div>Harga</div><div>${e.price}</div>`;
             html += `<div>Catatan</div><div>${e.notes ?? '—'}</div>`;
             html += `</div>`;
             html += `<div class="actions-row">`;

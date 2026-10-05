@@ -31,6 +31,6 @@ class ClientController extends Controller
 
         Client::create($data);
 
-        return redirect()->route('clients.index')->with('success', 'Klien berhasil ditambahkan.');
+        return redirect()->route('clients.index')->with('success', 'Client berhasil ditambahkan.');
     }
 }

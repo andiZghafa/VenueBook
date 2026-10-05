@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Klien / Organizer')
+@section('title', 'Client/Organizer')
 
 @section('content')
 
     <div class="topbar">
         <div class="title">
-            <h1>Klien / Organizer</h1>
+            <h1>Client/Organizer</h1>
         </div>
         <div class="actions">
-            <a href="{{ route('clients.create') }}" class="btn primary">+ Tambah Klien</a>
+            <a href="{{ route('clients.create') }}" class="btn primary">+ Tambah Client</a>
         </div>
     </div>
 
@@ -26,7 +26,7 @@
                         <td>{{ $client->bookings_count }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" style="color:var(--muted)">Belum ada klien terdaftar.</td></tr>
+                    <tr><td colspan="3" style="color:var(--muted)">Belum ada client terdaftar.</td></tr>
                 @endforelse
             </tbody>
         </table>

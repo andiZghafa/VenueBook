@@ -144,7 +144,7 @@ return [
         'title' => 'nama event',
         'venue_id' => 'venue',
         'event_type_id' => 'jenis event',
-        'client_id' => 'klien',
+        'client_id' => 'client',
         'pic_user_id' => 'PIC sales',
         'start_date' => 'tanggal mulai',
         'end_date' => 'tanggal selesai',

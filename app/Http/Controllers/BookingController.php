@@ -82,7 +82,7 @@ class BookingController extends Controller
 
     public function show(Booking $booking): View
     {
-        $booking->load(['venue.destination', 'eventType', 'client', 'pic', 'creator', 'bookingSeats']);
+        $booking->load(['venue.destination', 'eventType', 'client', 'organizer', 'pic', 'creator', 'bookingSeats']);
 
         return view('bookings.show', compact('booking'));
     }
@@ -184,10 +184,23 @@ class BookingController extends Controller
             $request->merge(['client_id' => null]);
         }
 
+        if ($request->boolean('is_separate_organizer')) {
+            $organizerName = $request->input('organizer_name');
+            if (!empty($organizerName)) {
+                $organizer = \App\Models\Client::firstOrCreate(['name' => $organizerName]);
+                $request->merge(['organizer_id' => $organizer->id]);
+            } else {
+                $request->merge(['organizer_id' => null]);
+            }
+        } else {
+            $request->merge(['organizer_id' => $request->input('client_id')]);
+        }
+
         return $request->validate([
             'venue_id' => ['required', 'exists:venues,id'],
             'event_type_id' => ['required', 'exists:event_types,id'],
             'client_id' => ['nullable', 'exists:clients,id'],
+            'organizer_id' => ['nullable', 'exists:clients,id'],
             'pic_user_id' => ['nullable', 'exists:users,id'],
             'title' => ['required', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
@@ -195,6 +208,7 @@ class BookingController extends Controller
             'load_at' => ['nullable', 'date'],
             'unload_at' => ['nullable', 'date'],
             'guest_count' => ['nullable', 'integer', 'min:1'],
+            'price' => ['nullable', 'numeric', 'min:0'],
             'status' => ['required', 'in:hold,tentative,fix,cancelled,maintenance'],
             'notes' => ['nullable', 'string'],
         ]);
