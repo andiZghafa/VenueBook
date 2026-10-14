@@ -326,6 +326,17 @@ html.sidebar-collapsed .user-card {
     color: #000;
 }
 
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-width: 0;
+}
+
+.main-wrapper .main {
+    flex: 1 0 auto;
+}
+
 .main {
     padding: 22px;
     background: var(--bg);
@@ -408,7 +419,7 @@ html.sidebar-collapsed .user-card {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    margin: 18px 0;
+    margin: 0 0 18px;
 }
 
 .kpi {
@@ -1042,13 +1053,26 @@ html.sidebar-collapsed .user-card {
 .login-wrap {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     background-color: var(--primary);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    padding: 20px;
+    padding: 24px 20px 0;
+}
+
+.login-wrap .login-card {
+    margin: auto 0 24px;
+}
+
+.login-wrap .global-footer {
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
+    background: rgba(143, 168, 79, 0.95);
+    backdrop-filter: blur(4px);
 }
 
 .login-card {
@@ -1056,14 +1080,14 @@ html.sidebar-collapsed .user-card {
     border-radius: 16px;
     padding: 36px;
     width: 100%;
-    max-width: 380px;
+    max-width: 400px;
     box-shadow: 0 20px 50px rgba(12, 29, 56, 0.35);
 }
 
 .login-card .brand {
     color: var(--nav-active);
     justify-content: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .login-card .brand-logo {
@@ -1075,11 +1099,50 @@ html.sidebar-collapsed .user-card {
     color: #fff;
 }
 
+.login-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+}
+
 .login-sub {
     text-align: center;
     color: var(--muted);
     font-size: 13px;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
+}
+
+.global-footer {
+    background: #8fa84f;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: center;
+    padding: 14px 20px;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+#eventsTableCard {
+    position: relative;
+    transition: opacity 0.2s ease;
+}
+
+#eventsTableCard.is-loading {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+@media (max-width: 640px) {
+    .global-footer {
+        font-size: 11.5px;
+        padding: 12px 14px;
+    }
 }
 
 .login-card button {
@@ -1321,3 +1384,183 @@ span.flatpickr-weekday {
         transition: none;
     }
 }
+
+/* Client Table & Modal Styles */
+.client-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.client-row:hover td {
+    background: var(--primary-tint) !important;
+}
+
+.client-address {
+    max-width: 280px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 29, 56, 0.45);
+    backdrop-filter: blur(3px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    animation: modal-fade 0.2s ease-out;
+}
+
+.modal-card {
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: 0 20px 50px rgba(12, 29, 56, 0.25);
+    border: 1px solid var(--primary-tint);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modal-pop 0.2s ease-out;
+}
+
+.modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line);
+    background: #fafcfb;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+}
+
+.modal-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: #f1f4f2;
+    color: var(--muted);
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.15s ease;
+}
+
+.modal-close:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.modal-body {
+    padding: 22px 24px;
+    max-height: calc(85vh - 140px);
+    overflow-y: auto;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--line);
+    background: #fafcfb;
+}
+
+.client-events-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--primary-tint);
+    border: 1px solid rgba(167, 186, 104, 0.4);
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.client-events-summary .events-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #384e1b;
+}
+
+.client-events-summary .events-count {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--green);
+    background: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes modal-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modal-pop {
+    from { transform: scale(0.96); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Global Toast Styles */
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    min-width: 280px;
+    max-width: 400px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(12, 29, 56, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success {
+    background: #edf5d9;
+    color: #2b3e14;
+    border: 1px solid #8daf90;
+}
+
+.toast.error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+

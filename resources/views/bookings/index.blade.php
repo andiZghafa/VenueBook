@@ -14,14 +14,14 @@
     </div>
 
     <section class="panel filters" style="margin-bottom:14px">
-        <form method="GET" action="{{ route('bookings.index') }}" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;padding:16px">
+        <form id="filterForm" method="GET" action="{{ route('bookings.index') }}" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;padding:16px">
             <div class="field" style="min-width:200px;margin:0">
-                <label>Cari</label>
-                <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client, venue...">
+                <label for="filterSearch">Cari</label>
+                <input type="text" id="filterSearch" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client, venue...">
             </div>
             <div class="field" style="min-width:180px;margin:0">
-                <label>Destinasi</label>
-                <select name="destination_id">
+                <label for="filterDestination">Destinasi</label>
+                <select id="filterDestination" name="destination_id">
                     <option value="">Semua Destinasi</option>
                     @foreach ($destinations as $d)
                         <option value="{{ $d->id }}" @selected(($filters['destination_id'] ?? null) == $d->id)>{{ $d->name }}</option>
@@ -29,17 +29,17 @@
                 </select>
             </div>
             <div class="field" style="min-width:180px;margin:0">
-                <label>Venue</label>
-                <select name="venue_id">
+                <label for="filterVenue">Venue</label>
+                <select id="filterVenue" name="venue_id">
                     <option value="">Semua Venue</option>
                     @foreach ($venues as $v)
-                        <option value="{{ $v->id }}" @selected(($filters['venue_id'] ?? null) == $v->id)>{{ $v->destination->name }} — {{ $v->name }}</option>
+                        <option value="{{ $v->id }}" data-destination-id="{{ $v->destination_id }}" @selected(($filters['venue_id'] ?? null) == $v->id)>{{ $v->destination->name }} — {{ $v->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="field" style="min-width:150px;margin:0">
-                <label>Status</label>
-                <select name="status">
+                <label for="filterStatus">Status</label>
+                <select id="filterStatus" name="status">
                     <option value="">Semua Status</option>
                     @foreach (['hold' => 'Hold', 'tentative' => 'Tentative', 'fix' => 'Fix', 'cancelled' => 'Cancelled', 'maintenance' => 'Maintenance'] as $value => $label)
                         <option value="{{ $value }}" @selected(($filters['status'] ?? null) === $value)>{{ $label }}</option>
@@ -47,20 +47,19 @@
                 </select>
             </div>
             <div class="field" style="min-width:180px;margin:0">
-                <label>PIC Sales</label>
-                <select name="pic_user_id">
+                <label for="filterPic">PIC Sales</label>
+                <select id="filterPic" name="pic_user_id">
                     <option value="">Semua PIC</option>
                     @foreach ($salesUsers as $u)
                         <option value="{{ $u->id }}" @selected(($filters['pic_user_id'] ?? null) == $u->id)>{{ $u->name }}</option>
                     @endforeach
                 </select>
             </div>
-            <button type="submit" class="btn primary">Terapkan</button>
-            <a href="{{ route('bookings.index') }}" class="btn">Reset</a>
+            <a href="{{ route('bookings.index') }}" id="filterReset" class="btn">Reset</a>
         </form>
     </section>
 
-    <section class="panel table-card">
+    <section class="panel table-card" id="eventsTableCard">
         <table class="table">
             <thead>
                 <tr><th>Kode</th><th>Tanggal</th><th>Destinasi</th><th>Venue</th><th>Nama Event</th><th>Harga</th><th>Status</th><th>PIC</th></tr>
@@ -78,12 +77,162 @@
                         <td>{{ $booking->pic?->name ?? '—' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" style="color:var(--muted)">Belum ada event yang cocok dengan filter ini.</td></tr>
+                    <tr><td colspan="8" style="color:var(--muted)">Belum ada event yang cocok dengan filter ini.</td></tr>
                 @endforelse
             </tbody>
         </table>
 
         @include('partials.pagination', ['paginator' => $bookings])
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterForm = document.getElementById('filterForm');
+            const searchInput = document.getElementById('filterSearch');
+            const destSelect = document.getElementById('filterDestination');
+            const venueSelect = document.getElementById('filterVenue');
+            const statusSelect = document.getElementById('filterStatus');
+            const picSelect = document.getElementById('filterPic');
+            const resetBtn = document.getElementById('filterReset');
+            const tableCard = document.getElementById('eventsTableCard');
+
+            let abortController = null;
+            let debounceTimer = null;
+
+            function updateVenueOptions() {
+                const selectedDest = destSelect.value;
+                let selectedVenueValid = false;
+
+                Array.from(venueSelect.options).forEach((opt, idx) => {
+                    if (idx === 0) return;
+                    const optDestId = opt.getAttribute('data-destination-id');
+                    const show = !selectedDest || optDestId === selectedDest;
+                    opt.hidden = !show;
+                    opt.style.display = show ? '' : 'none';
+                    if (show && opt.value === venueSelect.value) {
+                        selectedVenueValid = true;
+                    }
+                });
+
+                if (venueSelect.value && !selectedVenueValid) {
+                    venueSelect.value = '';
+                }
+            }
+
+            updateVenueOptions();
+
+            function buildUrl(page = null) {
+                const url = new URL('{{ route('bookings.index') }}', window.location.origin);
+                const q = searchInput.value.trim();
+                if (q) url.searchParams.set('q', q);
+                if (destSelect.value) url.searchParams.set('destination_id', destSelect.value);
+                if (venueSelect.value) url.searchParams.set('venue_id', venueSelect.value);
+                if (statusSelect.value) url.searchParams.set('status', statusSelect.value);
+                if (picSelect.value) url.searchParams.set('pic_user_id', picSelect.value);
+                if (page && page > 1) url.searchParams.set('page', page);
+                return url.toString();
+            }
+
+            async function loadTable(url, pushState = true) {
+                if (abortController) {
+                    abortController.abort();
+                }
+                abortController = new AbortController();
+
+                tableCard.classList.add('is-loading');
+
+                try {
+                    const res = await fetch(url, {
+                        signal: abortController.signal,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html'
+                        }
+                    });
+
+                    if (!res.ok) throw new Error('Response error: ' + res.status);
+
+                    const html = await res.text();
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const newCard = doc.getElementById('eventsTableCard');
+
+                    if (newCard) {
+                        tableCard.innerHTML = newCard.innerHTML;
+                    }
+
+                    if (pushState) {
+                        window.history.pushState(null, '', url);
+                    }
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.error('Filter request failed:', err);
+                        if (pushState) window.location.href = url;
+                    }
+                } finally {
+                    tableCard.classList.remove('is-loading');
+                }
+            }
+
+            function applyFilters() {
+                const url = buildUrl();
+                loadTable(url, true);
+            }
+
+            searchInput.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function () {
+                    applyFilters();
+                }, 350);
+            });
+
+            filterForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                clearTimeout(debounceTimer);
+                applyFilters();
+            });
+
+            destSelect.addEventListener('change', function () {
+                updateVenueOptions();
+                applyFilters();
+            });
+
+            [venueSelect, statusSelect, picSelect].forEach(function (select) {
+                select.addEventListener('change', function () {
+                    applyFilters();
+                });
+            });
+
+            resetBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                clearTimeout(debounceTimer);
+                searchInput.value = '';
+                destSelect.value = '';
+                updateVenueOptions();
+                venueSelect.value = '';
+                statusSelect.value = '';
+                picSelect.value = '';
+                applyFilters();
+            });
+
+            tableCard.addEventListener('click', function (e) {
+                const link = e.target.closest('.pagination a');
+                if (link && link.href) {
+                    e.preventDefault();
+                    loadTable(link.href, true);
+                }
+            });
+
+            window.addEventListener('popstate', function () {
+                const currentUrl = new URL(window.location.href);
+                searchInput.value = currentUrl.searchParams.get('q') || '';
+                destSelect.value = currentUrl.searchParams.get('destination_id') || '';
+                updateVenueOptions();
+                venueSelect.value = currentUrl.searchParams.get('venue_id') || '';
+                statusSelect.value = currentUrl.searchParams.get('status') || '';
+                picSelect.value = currentUrl.searchParams.get('pic_user_id') || '';
+                loadTable(window.location.href, false);
+            });
+        });
+    </script>
 
 @endsection

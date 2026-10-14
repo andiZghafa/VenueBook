@@ -13,6 +13,9 @@
     <div class="login-card">
         <div class="brand"><img src="{{ asset('images/Venue Booking Logo-Login.png') }}" alt="Venue Booking" class="brand-logo"></div>
 
+        <h1 class="login-title">Selamat datang kembali!</h1>
+        <p class="login-sub">Silakan masuk untuk melanjutkan</p>
+
         @if ($errors->any())
             <div class="alert error">{{ $errors->first() }}</div>
         @endif
@@ -30,6 +33,8 @@
             <button type="submit" class="btn primary">Masuk</button>
         </form>
     </div>
+
+    @include('partials.footer')
 </div>
 </body>
 </html>

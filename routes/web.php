@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
     Route::get('clients/create', [ClientController::class, 'create'])->name('clients.create');
     Route::post('clients', [ClientController::class, 'store'])->name('clients.store');
+    Route::get('clients/{client}', [ClientController::class, 'show'])->name('clients.show');
+    Route::match(['put', 'patch'], 'clients/{client}', [ClientController::class, 'update'])->name('clients.update');
 
     Route::middleware('role:admin,superadmin')->group(function () {
         Route::get('venues', [VenueController::class, 'index'])->name('venues.index');

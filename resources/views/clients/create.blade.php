@@ -14,21 +14,7 @@
     <section class="panel form-card">
         <form method="POST" action="{{ route('clients.store') }}">
             @csrf
-            <div class="form-grid">
-                <div class="field full">
-                    <label>Nama</label>
-                    <input type="text" name="name" value="{{ old('name') }}" required>
-                    @error('name') <div class="field-error">{{ $message }}</div> @enderror
-                </div>
-                <div class="field">
-                    <label>Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}">
-                </div>
-                <div class="field">
-                    <label>Telepon</label>
-                    <input type="text" name="phone" value="{{ old('phone') }}">
-                </div>
-            </div>
+            @include('clients.form-fields')
             <div class="form-actions">
                 <button type="submit" class="btn primary">Simpan Client</button>
                 <a href="{{ route('clients.index') }}" class="btn">Batal</a>

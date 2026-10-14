@@ -14,15 +14,6 @@
         </div>
     </div>
 
-    <section class="kpis">
-        <div class="kpi"><small>Total Venue</small><strong>{{ $kpis['venueCount'] }}</strong><span class="up">{{ $filters['destination_id'] ?? null ? 'di destinasi terpilih' : 'di 3 destinasi' }}</span></div>
-        <div class="kpi"><small>Event Bulan Ini</small><strong>{{ $kpis['eventCount'] }}</strong><span class="up">{{ $month->translatedFormat('F Y') }}</span></div>
-        <div class="kpi"><small>Hold Request</small><strong>{{ $kpis['holdCount'] }}</strong><span class="up">Perlu follow-up sales</span></div>
-        <div class="kpi"><small>Event Fix</small><strong>{{ $kpis['fixCount'] }}</strong><span class="up">Confirmed booking</span></div>
-        <div class="kpi"><small>Tingkat Utilisasi</small><strong>{{ $kpis['utilization'] }}%</strong><span class="up">Estimasi venue-hari terpakai</span></div>
-        <div class="kpi"><small>Expected Earning</small><strong>Rp {{ number_format($kpis['expectedEarning'], 0, ',', '.') }}</strong><span class="up">Fix: Rp {{ number_format($kpis['expectedEarningFix'], 0, ',', '.') }} &middot; Pipeline: Rp {{ number_format($kpis['expectedEarningPipeline'], 0, ',', '.') }}</span></div>
-    </section>
-
     <section class="panel filters-bar">
         <form method="GET" action="{{ route('dashboard') }}" class="filters-inline">
             <input type="hidden" name="y" value="{{ $month->year }}">
@@ -83,6 +74,15 @@
                 </a>
             </div>
         </form>
+    </section>
+
+    <section class="kpis">
+        <div class="kpi"><small>Total Venue</small><strong>{{ $kpis['venueCount'] }}</strong><span class="up">{{ $filters['destination_id'] ?? null ? 'di destinasi terpilih' : 'di 3 destinasi' }}</span></div>
+        <div class="kpi"><small>Event Bulan Ini</small><strong>{{ $kpis['eventCount'] }}</strong><span class="up">{{ $month->translatedFormat('F Y') }}</span></div>
+        <div class="kpi"><small>Hold Request</small><strong>{{ $kpis['holdCount'] }}</strong><span class="up">Perlu follow-up sales</span></div>
+        <div class="kpi"><small>Event Fix</small><strong>{{ $kpis['fixCount'] }}</strong><span class="up">Confirmed booking</span></div>
+        <div class="kpi"><small>Tingkat Utilisasi</small><strong>{{ $kpis['utilization'] }}%</strong><span class="up">Estimasi venue-hari terpakai</span></div>
+        <div class="kpi"><small>Expected Earning</small><strong>Rp {{ number_format($kpis['expectedEarning'], 0, ',', '.') }}</strong><span class="up">Fix: Rp {{ number_format($kpis['expectedEarningFix'], 0, ',', '.') }} &middot; Pipeline: Rp {{ number_format($kpis['expectedEarningPipeline'], 0, ',', '.') }}</span></div>
     </section>
 
     <section class="content" id="calendarContent">
