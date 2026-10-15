@@ -13,8 +13,8 @@
     <div class="login-card">
         <div class="brand"><img src="{{ asset('images/Venue Booking Logo-Login.png') }}" alt="Venue Booking" class="brand-logo"></div>
 
-        <h1 class="login-title">Selamat datang kembali!</h1>
-        <p class="login-sub">Silakan masuk untuk melanjutkan</p>
+        <h1 class="login-title">Selamat Datang Kembali!</h1>
+        <p class="login-sub">Platform pengelolaan pemesanan venue di kawasan wisata Borobudur, Prambanan, dan Ratu Boko. Silakan masuk untuk melanjutkan.</p>
 
         @if ($errors->any())
             <div class="alert error">{{ $errors->first() }}</div>
