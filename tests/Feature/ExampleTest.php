@@ -15,7 +15,7 @@ class ExampleTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        $response->assertSee('Selamat datang kembali!');
+        $response->assertSee('Selamat Datang Kembali!');
         $response->assertSee('Silakan masuk untuk melanjutkan');
         $response->assertSee('PT Taman Wisata Candi Borobudur, Prambanan dan Ratu Boko (Persero) © 2026. All Rights Reserved.');
     }

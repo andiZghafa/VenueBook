@@ -35,6 +35,7 @@ class SeatController extends Controller
 
     public function edit(Booking $booking): View
     {
+        $this->authorize('view', $booking);
         abort_unless($booking->venue->is_seated, 404);
 
         $booking->load('venue.destination');
@@ -75,7 +76,6 @@ class SeatController extends Controller
             }
 
             foreach ($naturalPointsByZone as $zone => $pointsByRow) {
-
 
                 foreach (TheaterFanLayout::ROWS as $row) {
                     $point = $pointsByRow[$row];

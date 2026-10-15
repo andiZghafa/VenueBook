@@ -46,6 +46,24 @@ class User extends Authenticatable
     }
 
     /**
+     * Return list of destination IDs this user is tied to.
+     *
+     * @return array<int, int>
+     */
+    public function destinationIds(): array
+    {
+        return $this->destination_id ? [(int) $this->destination_id] : [];
+    }
+
+    /**
+     * @return HasMany<NotificationRead, $this>
+     */
+    public function notificationReads(): HasMany
+    {
+        return $this->hasMany(NotificationRead::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

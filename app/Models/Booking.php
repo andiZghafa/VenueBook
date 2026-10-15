@@ -145,4 +145,25 @@ class Booking extends Model
                 });
             });
     }
+
+    /**
+     * @return HasMany<NotificationRead, $this>
+     */
+    public function notificationReads(): HasMany
+    {
+        return $this->hasMany(NotificationRead::class);
+    }
+
+    /**
+     * Compute a hash of date/time fields to detect schedule changes.
+     */
+    public function scheduleHash(): string
+    {
+        return md5(
+            ($this->start_date?->format('Y-m-d') ?? '').'|'.
+            ($this->end_date?->format('Y-m-d') ?? '').'|'.
+            ($this->load_at?->format('Y-m-d H:i:s') ?? '').'|'.
+            ($this->unload_at?->format('Y-m-d H:i:s') ?? '')
+        );
+    }
 }

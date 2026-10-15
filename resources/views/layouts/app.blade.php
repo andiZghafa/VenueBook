@@ -58,6 +58,8 @@
     </button>
 
     <div class="main-wrapper">
+        @include('partials.header')
+
         <main class="main">
             @if (session('success'))
                 <div class="alert success">{{ session('success') }}</div>

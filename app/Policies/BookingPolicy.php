@@ -17,7 +17,11 @@ class BookingPolicy
 
     public function view(User $user, Booking $booking): bool
     {
-        return true;
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return in_array($booking->venue->destination_id, $user->destinationIds(), true);
     }
 
     /**
@@ -33,7 +37,7 @@ class BookingPolicy
      */
     public function update(User $user, Booking $booking): bool
     {
-        return $user->isAdmin() || $user->destination_id === $booking->venue->destination_id;
+        return $user->isAdmin() || in_array($booking->venue->destination_id, $user->destinationIds(), true);
     }
 
     public function delete(User $user, Booking $booking): bool

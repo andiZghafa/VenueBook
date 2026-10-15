@@ -18,15 +18,17 @@
         <form method="GET" action="{{ route('dashboard') }}" class="filters-inline">
             <input type="hidden" name="y" value="{{ $month->year }}">
             <input type="hidden" name="m" value="{{ $month->month }}">
-            <div class="field">
-                <label>Destinasi</label>
-                <select name="destination_id" onchange="this.form.submit()">
-                    <option value="">Semua Destinasi</option>
-                    @foreach ($destinations as $d)
-                        <option value="{{ $d->id }}" @selected(($filters['destination_id'] ?? null) == $d->id)>{{ $d->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+            @if (auth()->user()->isAdmin())
+                <div class="field">
+                    <label>Destinasi</label>
+                    <select name="destination_id" onchange="this.form.submit()">
+                        <option value="">Semua Destinasi</option>
+                        @foreach ($destinations as $d)
+                            <option value="{{ $d->id }}" @selected(($filters['destination_id'] ?? null) == $d->id)>{{ $d->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
             <div class="field">
                 <label>Venue</label>
                 <select name="venue_id" onchange="this.form.submit()">
@@ -115,11 +117,11 @@
             </div>
             <div class="calendar">
                 @foreach ($calendar as $cell)
-                    <div class="day {{ $cell['inMonth'] ? '' : 'muted' }} {{ $cell['hasWarning'] ? 'has-warning' : '' }}">
+                    <div class="day {{ $cell['inMonth'] ? '' : 'muted' }} {{ $cell['hasWarning'] ? 'has-warning' : '' }}" @if (!empty($cell['isUpcoming'])) title="{{ $cell['upcomingTooltip'] }}" @endif>
                         <div class="date {{ $cell['isToday'] ? 'today' : '' }}">
                             {{ $cell['date']->day }}
-                            @if ($cell['hasWarning'])
-                                <span class="day-warn-badge" title="Ada event yang sedang loading/unloading">⚠️</span>
+                            @if (!empty($cell['isUpcoming']))
+                                <span class="day-warn-badge" title="{{ $cell['upcomingTooltip'] }}">⚠️</span>
                             @endif
                         </div>
                         <div class="events-list">
@@ -138,7 +140,9 @@
                 <span><i class="dot" style="background:var(--green)"></i>Fix</span>
                 <span><i class="dot" style="background:#ef4444"></i>Cancelled</span>
                 <span><i class="dot" style="background:#64748b"></i>Maintenance/Blackout</span>
-                <span>⚠️ Tanggal dengan sorot oranye = ada event sedang loading/unloading</span>
+                @if (!empty($hasAnyUpcomingHighlight))
+                    <span class="legend-upcoming" style="color: #ea580c; font-weight: 600;"><i class="dot" style="background:#f59e0b; box-shadow: 0 0 0 1px #ea580c;"></i> ⚠️ Tanggal dengan sorot oranye</span>
+                @endif
             </div>
         </section>
 

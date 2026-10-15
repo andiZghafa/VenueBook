@@ -11,6 +11,7 @@ use App\Models\Venue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -80,11 +81,21 @@ class BookingController extends Controller
         return redirect()->route('bookings.show', $booking)->with('success', "Event \"{$booking->title}\" berhasil dibuat.");
     }
 
-    public function show(Booking $booking): View
+    public function show(string $booking): View|Response
     {
-        $booking->load(['venue.destination', 'eventType', 'client', 'organizer', 'pic', 'creator', 'bookingSeats']);
+        $item = Booking::withTrashed()->find($booking);
 
-        return view('bookings.show', compact('booking'));
+        if (! $item || $item->trashed()) {
+            return response()->view('bookings.not_found', [
+                'booking' => $item,
+            ], 404);
+        }
+
+        $this->authorize('view', $item);
+
+        $item->load(['venue.destination', 'eventType', 'client', 'organizer', 'pic', 'creator', 'bookingSeats']);
+
+        return view('bookings.show', ['booking' => $item]);
     }
 
     public function edit(Request $request, Booking $booking): View
@@ -177,8 +188,8 @@ class BookingController extends Controller
     private function validateBooking(Request $request, ?Booking $booking = null): array
     {
         $clientName = $request->input('client_name');
-        if (!empty($clientName)) {
-            $client = \App\Models\Client::firstOrCreate(['name' => $clientName]);
+        if (! empty($clientName)) {
+            $client = Client::firstOrCreate(['name' => $clientName]);
             $request->merge(['client_id' => $client->id]);
         } else {
             $request->merge(['client_id' => null]);
@@ -186,8 +197,8 @@ class BookingController extends Controller
 
         if ($request->boolean('is_separate_organizer')) {
             $organizerName = $request->input('organizer_name');
-            if (!empty($organizerName)) {
-                $organizer = \App\Models\Client::firstOrCreate(['name' => $organizerName]);
+            if (! empty($organizerName)) {
+                $organizer = Client::firstOrCreate(['name' => $organizerName]);
                 $request->merge(['organizer_id' => $organizer->id]);
             } else {
                 $request->merge(['organizer_id' => null]);

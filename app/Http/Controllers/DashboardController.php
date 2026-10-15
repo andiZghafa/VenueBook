@@ -7,12 +7,17 @@ use App\Models\Destination;
 use App\Models\EventType;
 use App\Models\User;
 use App\Models\Venue;
+use App\Services\UpcomingEventService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected UpcomingEventService $upcomingEventService
+    ) {}
+
     public function index(Request $request): View
     {
         $month = Carbon::create(
@@ -26,8 +31,14 @@ class DashboardController extends Controller
         $filters = $request->only(['destination_id', 'venue_id', 'event_type_id', 'status', 'pic_user_id', 'q']);
         $user = $request->user();
 
-        if (! $request->has('destination_id') && $user->role === 'sales') {
-            $filters['destination_id'] = $user->destination_id;
+        // Enforce destination scoping: sales users must only ever see their own destination(s)
+        if (! $user->isAdmin()) {
+            $destinationsAllowed = $user->destinationIds();
+            if (empty($destinationsAllowed)) {
+                $filters['destination_id'] = -1; // No destination assigned -> no results
+            } else {
+                $filters['destination_id'] = $user->destination_id;
+            }
         }
 
         $venuesQuery = Venue::with('destination')->orderBy('name');
@@ -68,20 +79,44 @@ class DashboardController extends Controller
 
         $warningIds = $bookings->filter(fn (Booking $b) => $b->isLoadingOrUnloading())->pluck('id');
 
+        // Upcoming events visible to this user (single shared query)
+        $upcomingEvents = $this->upcomingEventService->getUpcomingEvents($user, $filters['destination_id'] ?? null);
+        [$upcomingStart, $upcomingEnd] = $this->upcomingEventService->getUpcomingWindow();
+
+        $hasAnyUpcomingHighlight = false;
+
         $calendar = [];
         for ($date = $gridStart->copy(); $date->lte($gridEnd); $date->addDay()) {
             $dayEvents = $bookings->filter(fn (Booking $b) => $date->between($b->start_date, $b->end_date))->values();
+
+            $isDateInUpcomingWindow = $date->betweenIncluded($upcomingStart, $upcomingEnd);
+            $upcomingOnDay = $isDateInUpcomingWindow
+                ? $upcomingEvents->filter(fn (Booking $b) => $date->between($b->start_date, $b->end_date))->values()
+                : collect();
+
+            $isUpcoming = $upcomingOnDay->isNotEmpty();
+            if ($isUpcoming) {
+                $hasAnyUpcomingHighlight = true;
+            }
+
+            $upcomingTooltip = '';
+            if ($isUpcoming) {
+                $count = $upcomingOnDay->count();
+                $titles = $upcomingOnDay->pluck('title')->join(', ');
+                $upcomingTooltip = "{$count} event mendatang: {$titles}";
+            }
 
             $calendar[] = [
                 'date' => $date->copy(),
                 'inMonth' => $date->month === $month->month,
                 'isToday' => $date->isToday(),
                 'events' => $dayEvents,
-                'hasWarning' => $dayEvents->pluck('id')->intersect($warningIds)->isNotEmpty(),
+                'hasWarning' => $isUpcoming,
+                'isUpcoming' => $isUpcoming,
+                'upcomingTooltip' => $upcomingTooltip,
             ];
         }
 
-        $user = $request->user();
         $eventDetails = $bookings->mapWithKeys(fn (Booking $b) => [$b->id => [
             'id' => $b->id,
             'code' => $b->code,
@@ -94,7 +129,7 @@ class DashboardController extends Controller
             'client' => $b->client?->name,
             'pic' => $b->pic?->name,
             'guestCount' => $b->guest_count,
-            'price' => $b->price !== null ? 'Rp ' . number_format($b->price, 0, ',', '.') : '-',
+            'price' => $b->price !== null ? 'Rp '.number_format($b->price, 0, ',', '.') : '-',
             'notes' => $b->notes,
             'dateLabel' => $b->start_date->eq($b->end_date)
                 ? $b->start_date->translatedFormat('d M Y')
@@ -112,6 +147,7 @@ class DashboardController extends Controller
             'monthOptions' => collect(range(1, 12))->mapWithKeys(fn ($m) => [$m => Carbon::create(2000, $m, 1)->translatedFormat('F')]),
             'yearOptions' => range(now()->year - 2, now()->year + 2),
             'calendar' => $calendar,
+            'hasAnyUpcomingHighlight' => $hasAnyUpcomingHighlight,
             'destinations' => $destinations,
             'venues' => $venues,
             'eventTypes' => EventType::orderBy('name')->get(),
