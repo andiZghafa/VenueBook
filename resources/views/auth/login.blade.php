@@ -10,28 +10,30 @@
 </head>
 <body>
 <div class="login-wrap" style="background-image: url('{{ asset('images/bg.jpeg') }}')">
-    <div class="login-card">
-        <div class="brand"><img src="{{ asset('images/Venue Booking Logo-Login.png') }}" alt="Venue Booking" class="brand-logo"></div>
+    <div class="login-area">
+        <div class="login-card">
+            <div class="brand"><img src="{{ asset('images/Venue Booking Logo-Login.png') }}" alt="Venue Booking" class="brand-logo"></div>
 
-        <h1 class="login-title">Selamat Datang Kembali!</h1>
-        <p class="login-sub">Platform pengelolaan pemesanan venue di kawasan wisata Borobudur, Prambanan, dan Ratu Boko. Silakan masuk untuk melanjutkan.</p>
+            <h1 class="login-title">Selamat Datang Kembali!</h1>
+            <p class="login-sub">Platform pengelolaan pemesanan venue di kawasan wisata Borobudur, Prambanan, dan Ratu Boko. Silakan masuk untuk melanjutkan.</p>
 
-        @if ($errors->any())
-            <div class="alert error">{{ $errors->first() }}</div>
-        @endif
+            @if ($errors->any())
+                <div class="alert error">{{ $errors->first() }}</div>
+            @endif
 
-        <form method="POST" action="{{ route('login.store') }}">
-            @csrf
-            <div class="field">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
-            </div>
-            <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn primary">Masuk</button>
-        </form>
+            <form method="POST" action="{{ route('login.store') }}">
+                @csrf
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn primary">Masuk</button>
+            </form>
+        </div>
     </div>
 
     @include('partials.footer')
