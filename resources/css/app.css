@@ -96,7 +96,7 @@ html.sidebar-collapsed .app {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px rgba(12, 29, 56, 0.15);
-    z-index: 20;
+    z-index: 40;
     transition:
         left 0.15s ease,
         transform 0.15s ease,
