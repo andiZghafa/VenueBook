@@ -70,8 +70,8 @@
                 <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client..." onchange="this.form.submit()">
             </div>
             <div class="field field-actions" style="flex: 0 0 auto; margin-left: auto;">
-                <a href="{{ route('dashboard', ['y' => $month->year, 'm' => $month->month]) }}" class="btn" title="Reset Filter" style="padding: 9px 12px; display: flex; align-items: center; border: 1.5px solid #94a3b8; color: #475569; border-radius: 8px; background: #f8fafc; transition: all 0.15s ease;" onmouseover="this.style.borderColor='#64748b'; this.style.color='#1e293b';" onmouseout="this.style.borderColor='#94a3b8'; this.style.color='#475569';">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                <a href="{{ route('dashboard', ['y' => $month->year, 'm' => $month->month]) }}" class="btn" title="Reset Filter" style="padding: 9px 12px; display: flex; align-items: center; border: 1.5px solid #94a3b8; color: #475569; border-radius: 8px; background: #f8fafc; transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;" onmouseover="this.style.borderColor='#64748b'; this.style.color='#1e293b';" onmouseout="this.style.borderColor='#94a3b8'; this.style.color='#475569';">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; transform: translateY(-0.5px);"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                     <span style="font-size: 13px; font-weight: 700;">Reset</span>
                 </a>
             </div>
@@ -85,6 +85,30 @@
         <div class="kpi"><small>Event Fix</small><strong>{{ $kpis['fixCount'] }}</strong><span class="up">Confirmed booking</span></div>
         <div class="kpi"><small>Tingkat Utilisasi</small><strong>{{ $kpis['utilization'] }}%</strong><span class="up">Estimasi venue-hari terpakai</span></div>
         <div class="kpi"><small>Expected Earning</small><strong>Rp {{ number_format($kpis['expectedEarning'], 0, ',', '.') }}</strong><span class="up">Fix: Rp {{ number_format($kpis['expectedEarningFix'], 0, ',', '.') }} &middot; Pipeline: Rp {{ number_format($kpis['expectedEarningPipeline'], 0, ',', '.') }}</span></div>
+    </section>
+
+    <section class="panel table-card" style="margin-bottom: 18px;">
+        <h3>Event Bulan Ini</h3>
+        <table class="table">
+            <thead>
+                <tr><th>Tanggal</th><th>Destinasi</th><th>Venue</th><th>Nama Event</th><th>Jenis</th><th>Status</th><th>PIC</th></tr>
+            </thead>
+            <tbody>
+                @forelse ($recentBookings as $booking)
+                    <tr onclick="showDetail({{ $booking->id }})" style="cursor:pointer">
+                        <td>{{ $booking->start_date->translatedFormat('d M Y') }}</td>
+                        <td>{{ $booking->venue->destination->name }}</td>
+                        <td>{{ $booking->venue->name }}</td>
+                        <td>{{ $booking->title }}</td>
+                        <td>{{ $booking->eventType->name }}</td>
+                        <td><span class="pill {{ $booking->status }}">{{ ucfirst($booking->status) }}</span></td>
+                        <td>{{ $booking->pic?->name ?? '—' }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="7" style="color:var(--muted)">Tidak ada event pada bulan ini.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </section>
 
     <section class="content" id="calendarContent">
@@ -121,7 +145,9 @@
                         <div class="date {{ $cell['isToday'] ? 'today' : '' }}">
                             {{ $cell['date']->day }}
                             @if (!empty($cell['isUpcoming']))
-                                <span class="day-warn-badge" title="{{ $cell['upcomingTooltip'] }}">⚠️</span>
+                                <span class="day-warn-badge" title="{{ $cell['upcomingTooltip'] }}">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                </span>
                             @endif
                         </div>
                         <div class="events-list">
@@ -141,7 +167,7 @@
                 <span><i class="dot" style="background:#ef4444"></i>Cancelled</span>
                 <span><i class="dot" style="background:#64748b"></i>Maintenance/Blackout</span>
                 @if (!empty($hasAnyUpcomingHighlight))
-                    <span class="legend-upcoming" style="color: #ea580c; font-weight: 600;"><i class="dot" style="background:#f59e0b; box-shadow: 0 0 0 1px #ea580c;"></i> ⚠️ Tanggal dengan sorot oranye</span>
+                    <span class="legend-upcoming" style="color: #ea580c; font-weight: 600;"><i class="dot" style="background:#f59e0b; box-shadow: 0 0 0 1px #ea580c;"></i> Tanggal dengan sorot oranye</span>
                 @endif
             </div>
         </section>
@@ -155,39 +181,14 @@
         </aside>
     </section>
 
-    <section class="bottom">
-        <div class="panel table-card">
-            <h3>Event Bulan Ini</h3>
-            <table class="table">
-                <thead>
-                    <tr><th>Tanggal</th><th>Destinasi</th><th>Venue</th><th>Nama Event</th><th>Jenis</th><th>Status</th><th>PIC</th></tr>
-                </thead>
-                <tbody>
-                    @forelse ($recentBookings as $booking)
-                        <tr onclick="showDetail({{ $booking->id }})" style="cursor:pointer">
-                            <td>{{ $booking->start_date->translatedFormat('d M Y') }}</td>
-                            <td>{{ $booking->venue->destination->name }}</td>
-                            <td>{{ $booking->venue->name }}</td>
-                            <td>{{ $booking->title }}</td>
-                            <td>{{ $booking->eventType->name }}</td>
-                            <td><span class="pill {{ $booking->status }}">{{ ucfirst($booking->status) }}</span></td>
-                            <td>{{ $booking->pic?->name ?? '—' }}</td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="7" style="color:var(--muted)">Tidak ada event pada bulan ini.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <section class="panel util" style="margin-top: 18px; max-width: 360px;">
+        <h3>Utilisasi Venue</h3>
+        <div class="ring" style="background:conic-gradient(var(--primary) 0 {{ $kpis['utilization'] }}%, #e5e7eb {{ $kpis['utilization'] }}% 100%)">
+            <span>{{ $kpis['utilization'] }}%</span>
         </div>
-        <div class="panel util">
-            <h3>Utilisasi Venue</h3>
-            <div class="ring" style="background:conic-gradient(var(--primary) 0 {{ $kpis['utilization'] }}%, #e5e7eb {{ $kpis['utilization'] }}% 100%)">
-                <span>{{ $kpis['utilization'] }}%</span>
-            </div>
-            <p style="font-size:12px;color:var(--muted);text-align:center">
-                Estimasi venue-hari terpakai dari total slot venue bulan ini.
-            </p>
-        </div>
+        <p style="font-size:12px;color:var(--muted);text-align:center">
+            Estimasi venue-hari terpakai dari total slot venue bulan ini.
+        </p>
     </section>
 
     <script>
@@ -211,7 +212,7 @@
             html += `<span class="pill ${e.status}" style="display:inline-block;margin-left:8px">${e.statusLabel}</span>`;
 
             if (e.isLoadingOrUnloading) {
-                html += `<div class="warn-banner">⚠️ Hey, event ini masih dalam proses loading atau unloading.</div>`;
+                html += `<div class="warn-banner"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Event ini sedang dalam periode loading atau unloading.</div>`;
             }
 
             html += `<h2>${e.title}</h2>`;
