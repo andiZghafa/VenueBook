@@ -20,8 +20,8 @@
             <input type="hidden" name="m" value="{{ $month->month }}">
             @if (auth()->user()->isAdmin())
                 <div class="field">
-                    <label>Destinasi</label>
-                    <select name="destination_id" onchange="this.form.submit()">
+                    <label for="dashFilterDest">Destinasi</label>
+                    <select id="dashFilterDest" name="destination_id" onchange="this.form.submit()">
                         <option value="">Semua Destinasi</option>
                         @foreach ($destinations as $d)
                             <option value="{{ $d->id }}" @selected(($filters['destination_id'] ?? null) == $d->id)>{{ $d->name }}</option>
@@ -30,17 +30,17 @@
                 </div>
             @endif
             <div class="field">
-                <label>Venue</label>
-                <select name="venue_id" onchange="this.form.submit()">
+                <label for="dashFilterVenue">Venue</label>
+                <select id="dashFilterVenue" name="venue_id" onchange="this.form.submit()">
                     <option value="">Semua Venue</option>
                     @foreach ($venues as $v)
-                        <option value="{{ $v->id }}" @selected(($filters['venue_id'] ?? null) == $v->id)>{{ $v->destination->name }} — {{ $v->name }}</option>
+                        <option value="{{ $v->id }}" @selected(($filters['venue_id'] ?? null) == $v->id)>{{ $v->destination->name }} · {{ $v->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="field">
-                <label>Jenis Event</label>
-                <select name="event_type_id" onchange="this.form.submit()">
+                <label for="dashFilterType">Jenis Event</label>
+                <select id="dashFilterType" name="event_type_id" onchange="this.form.submit()">
                     <option value="">Semua Jenis Event</option>
                     @foreach ($eventTypes as $t)
                         <option value="{{ $t->id }}" @selected(($filters['event_type_id'] ?? null) == $t->id)>{{ $t->name }}</option>
@@ -48,8 +48,8 @@
                 </select>
             </div>
             <div class="field">
-                <label>Status Event</label>
-                <select name="status" onchange="this.form.submit()">
+                <label for="dashFilterStatus">Status Event</label>
+                <select id="dashFilterStatus" name="status" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     @foreach (['hold' => 'Hold', 'tentative' => 'Tentative', 'fix' => 'Fix', 'cancelled' => 'Cancelled', 'maintenance' => 'Maintenance'] as $value => $label)
                         <option value="{{ $value }}" @selected(($filters['status'] ?? null) === $value)>{{ $label }}</option>
@@ -57,8 +57,8 @@
                 </select>
             </div>
             <div class="field">
-                <label>PIC Sales</label>
-                <select name="pic_user_id" onchange="this.form.submit()">
+                <label for="dashFilterPic">PIC Sales</label>
+                <select id="dashFilterPic" name="pic_user_id" onchange="this.form.submit()">
                     <option value="">Semua PIC</option>
                     @foreach ($salesUsers as $u)
                         <option value="{{ $u->id }}" @selected(($filters['pic_user_id'] ?? null) == $u->id)>{{ $u->name }}</option>
@@ -66,13 +66,13 @@
                 </select>
             </div>
             <div class="field">
-                <label>Cari</label>
-                <input type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client..." onchange="this.form.submit()">
+                <label for="dashFilterSearch">Cari</label>
+                <input type="search" id="dashFilterSearch" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client..." enterkeyhint="search" onchange="this.form.submit()">
             </div>
             <div class="field field-actions" style="flex: 0 0 auto; margin-left: auto;">
-                <a href="{{ route('dashboard', ['y' => $month->year, 'm' => $month->month]) }}" class="btn" title="Reset Filter" style="padding: 9px 12px; display: flex; align-items: center; border: 1.5px solid #94a3b8; color: #475569; border-radius: 8px; background: #f8fafc; transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;" onmouseover="this.style.borderColor='#64748b'; this.style.color='#1e293b';" onmouseout="this.style.borderColor='#94a3b8'; this.style.color='#475569';">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; transform: translateY(-0.5px);"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                    <span style="font-size: 13px; font-weight: 700;">Reset</span>
+                <a href="{{ route('dashboard', ['y' => $month->year, 'm' => $month->month]) }}" class="btn btn-reset" title="Reset Filter">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    <span>Reset</span>
                 </a>
             </div>
         </form>
@@ -95,17 +95,17 @@
             </thead>
             <tbody>
                 @forelse ($recentBookings as $booking)
-                    <tr onclick="showDetail({{ $booking->id }})" style="cursor:pointer">
+                    <tr tabindex="0" role="button" aria-label="Lihat ringkasan {{ $booking->title }}" onclick="showDetail({{ $booking->id }})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showDetail({{ $booking->id }});}" style="cursor:pointer">
                         <td>{{ $booking->start_date->translatedFormat('d M Y') }}</td>
                         <td>{{ $booking->venue->destination->name }}</td>
                         <td>{{ $booking->venue->name }}</td>
                         <td>{{ $booking->title }}</td>
                         <td>{{ $booking->eventType->name }}</td>
                         <td><span class="pill {{ $booking->status }}">{{ ucfirst($booking->status) }}</span></td>
-                        <td>{{ $booking->pic?->name ?? '—' }}</td>
+                        <td>{{ $booking->pic?->name ?? '-' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" style="color:var(--muted)">Tidak ada event pada bulan ini.</td></tr>
+                    <tr><td colspan="7" style="color:var(--muted)">Tidak ada event pada bulan ini. Gunakan tombol "+ Tambah Event" untuk menjadwalkan event baru.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -115,20 +115,20 @@
         <section class="panel calendar-wrap">
             <div class="cal-head">
                 <div class="cal-nav">
-                    <a href="{{ route('dashboard', array_merge($filters, ['y' => $month->copy()->subMonth()->year, 'm' => $month->copy()->subMonth()->month])) }}" class="btn">‹</a>
-                    <a href="{{ route('dashboard', array_merge($filters, ['y' => $month->copy()->addMonth()->year, 'm' => $month->copy()->addMonth()->month])) }}" class="btn">›</a>
+                    <a href="{{ route('dashboard', array_merge($filters, ['y' => $month->copy()->subMonth()->year, 'm' => $month->copy()->subMonth()->month])) }}" class="btn" aria-label="Bulan sebelumnya" title="Bulan sebelumnya">‹</a>
+                    <a href="{{ route('dashboard', array_merge($filters, ['y' => $month->copy()->addMonth()->year, 'm' => $month->copy()->addMonth()->month])) }}" class="btn" aria-label="Bulan berikutnya" title="Bulan berikutnya">›</a>
                     <form method="GET" action="{{ route('dashboard') }}" class="cal-jump">
                         @foreach ($filters as $key => $value)
                             @if ($value)
                                 <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                             @endif
                         @endforeach
-                        <select name="m" class="cal-jump-select" onchange="this.form.submit()">
+                        <select name="m" class="cal-jump-select" aria-label="Pilih bulan" onchange="this.form.submit()">
                             @foreach ($monthOptions as $num => $name)
                                 <option value="{{ $num }}" @selected($month->month === $num)>{{ $name }}</option>
                             @endforeach
                         </select>
-                        <select name="y" class="cal-jump-select" onchange="this.form.submit()">
+                        <select name="y" class="cal-jump-select" aria-label="Pilih tahun" onchange="this.form.submit()">
                             @foreach ($yearOptions as $yr)
                                 <option value="{{ $yr }}" @selected($month->year === $yr)>{{ $yr }}</option>
                             @endforeach
@@ -146,15 +146,15 @@
                             {{ $cell['date']->day }}
                             @if (!empty($cell['isUpcoming']))
                                 <span class="day-warn-badge" title="{{ $cell['upcomingTooltip'] }}">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                                 </span>
                             @endif
                         </div>
                         <div class="events-list">
                             @foreach ($cell['events'] as $event)
-                                <div class="event {{ $event->status }}" title="{{ $event->venue->destination->name }} — {{ $event->title }}" onclick="showDetail({{ $event->id }})">
+                                <button type="button" class="event {{ $event->status }}" title="{{ $event->venue->destination->name }} · {{ $event->title }}" onclick="showDetail({{ $event->id }})">
                                     {{ $event->title }}
-                                </div>
+                                </button>
                             @endforeach
                         </div>
                     </div>
@@ -164,15 +164,15 @@
                 <span><i class="dot" style="background:#f59e0b"></i>Hold</span>
                 <span><i class="dot" style="background:#8b5cf6"></i>Tentative</span>
                 <span><i class="dot" style="background:var(--green)"></i>Fix</span>
-                <span><i class="dot" style="background:#ef4444"></i>Cancelled</span>
+                <span><i class="dot" style="background:#dc2626"></i>Cancelled</span>
                 <span><i class="dot" style="background:#64748b"></i>Maintenance/Blackout</span>
                 @if (!empty($hasAnyUpcomingHighlight))
-                    <span class="legend-upcoming" style="color: #ea580c; font-weight: 600;"><i class="dot" style="background:#f59e0b; box-shadow: 0 0 0 1px #ea580c;"></i> Tanggal dengan sorot oranye</span>
+                    <span class="legend-upcoming"><i class="dot" style="background:#f59e0b; box-shadow: 0 0 0 1px #c2410c;"></i> Tanggal dengan sorot oranye</span>
                 @endif
             </div>
         </section>
 
-        <aside class="panel detail" id="detail" hidden>
+        <aside class="panel detail" id="detail" hidden aria-live="polite">
             <div class="detail-head">
                 <small>Detail Event</small>
                 <button type="button" class="detail-close" onclick="closeDetail()" aria-label="Tutup detail" title="Tutup">✕</button>
@@ -200,6 +200,13 @@
             document.getElementById('detailBody').innerHTML = '';
         }
 
+        document.addEventListener('keydown', function(e) {
+            const detailEl = document.getElementById('detail');
+            if (e.key === 'Escape' && detailEl && !detailEl.hidden) {
+                closeDetail();
+            }
+        });
+
         function showDetail(id) {
             const e = EVENTS[id];
             if (!e) return;
@@ -212,24 +219,24 @@
             html += `<span class="pill ${e.status}" style="display:inline-block;margin-left:8px">${e.statusLabel}</span>`;
 
             if (e.isLoadingOrUnloading) {
-                html += `<div class="warn-banner"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Event ini sedang dalam periode loading atau unloading.</div>`;
+                html += `<div class="warn-banner"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Event ini sedang dalam periode loading atau unloading.</div>`;
             }
 
             html += `<h2>${e.title}</h2>`;
-            html += `<p class="desc">${e.client ?? '—'}</p>`;
-            html += `<hr style="border:none;border-top:1px solid #edf0f4">`;
+            html += `<p class="desc">${e.client ?? '-'}</p>`;
+            html += `<hr style="border:none;border-top:1px solid #e2e8f0">`;
             html += `<div class="kv">`;
             html += `<div>Kode</div><div><b>${e.code}</b></div>`;
             html += `<div>Venue</div><div>${e.venue}</div>`;
             html += `<div>Tanggal</div><div>${e.dateLabel}</div>`;
-            html += `<div>Loading</div><div>${e.loadAt ?? '—'}</div>`;
-            html += `<div>Unloading</div><div>${e.unloadAt ?? '—'}</div>`;
+            html += `<div>Loading</div><div>${e.loadAt ?? '-'}</div>`;
+            html += `<div>Unloading</div><div>${e.unloadAt ?? '-'}</div>`;
             html += `<div>Jenis Event</div><div>${e.eventType}</div>`;
             html += `<div>Status</div><div>${e.statusLabel}</div>`;
-            html += `<div>PIC Sales</div><div>${e.pic ?? '—'}</div>`;
-            html += `<div>Jumlah Tamu</div><div>${e.guestCount ? e.guestCount + ' orang' : '—'}</div>`;
+            html += `<div>PIC Sales</div><div>${e.pic ?? '-'}</div>`;
+            html += `<div>Jumlah Tamu</div><div>${e.guestCount ? e.guestCount + ' orang' : '-'}</div>`;
             html += `<div>Harga</div><div>${e.price}</div>`;
-            html += `<div>Catatan</div><div>${e.notes ?? '—'}</div>`;
+            html += `<div>Catatan</div><div>${e.notes ?? '-'}</div>`;
             html += `</div>`;
             html += `<div class="actions-row">`;
             html += `<a href="${e.showUrl}" class="btn">Detail Lengkap</a>`;

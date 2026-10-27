@@ -145,10 +145,31 @@
             }
         } catch (err) {
             console.error('Failed to fetch notifications:', err);
+            if (bodyEl && (!dropdownEl.hidden || forceRender)) {
+                bodyEl.innerHTML = `
+                    <div class="notif-state notif-error" role="alert">
+                        <p class="notif-empty-text">Gagal memuat notifikasi</p>
+                        <span class="notif-empty-sub">Periksa koneksi Anda lalu coba muat ulang.</span>
+                        <button type="button" class="btn" style="margin-top:10px;" onclick="window.retryFetchNotifications()">Muat Ulang</button>
+                    </div>
+                `;
+            }
         } finally {
             isFetching = false;
         }
     }
+
+    window.retryFetchNotifications = function() {
+        if (bodyEl) {
+            bodyEl.innerHTML = `
+                <div class="notif-state notif-loading">
+                    <span class="notif-spinner"></span>
+                    <span>Memuat data event...</span>
+                </div>
+            `;
+        }
+        fetchNotifications(true);
+    };
 
     function updateBadgeUI(data) {
         const count = data.unread_count || 0;

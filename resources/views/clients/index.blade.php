@@ -26,6 +26,9 @@
             <tbody>
                 @forelse ($clients as $client)
                     <tr class="client-row"
+                        tabindex="0"
+                        role="button"
+                        aria-label="Edit client {{ $client->name }}"
                         data-id="{{ $client->id }}"
                         data-name="{{ $client->name }}"
                         data-email="{{ $client->email ?? '' }}"
@@ -44,7 +47,7 @@
                         <td style="text-align: right;">{{ $client->bookings_count }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" style="color:var(--muted)">Belum ada client terdaftar.</td></tr>
+                    <tr><td colspan="4" style="color:var(--muted); padding:20px 10px;">Belum ada client terdaftar. Klik <b>+ Tambah Client</b> di kanan atas untuk menambahkan data penyelenggara pertama.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -159,6 +162,21 @@
                 const row = e.target.closest('.client-row');
                 if (!row) return;
 
+                openModal({
+                    id: row.dataset.id,
+                    name: row.dataset.name,
+                    email: row.dataset.email,
+                    phone: row.dataset.phone,
+                    address: row.dataset.address,
+                    bookingsCount: row.dataset.bookingsCount
+                });
+            });
+
+            tableCard.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                const row = e.target.closest('.client-row');
+                if (!row) return;
+                e.preventDefault();
                 openModal({
                     id: row.dataset.id,
                     name: row.dataset.name,

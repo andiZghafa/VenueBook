@@ -16,7 +16,7 @@
                 @if ($booking->exists)
                     {{ $booking->code }}
                 @elseif ($seatedOnly)
-                    Jadwal baru untuk venue berkursi — kelola ketersediaan kursinya setelah disimpan.
+                    Jadwal baru untuk venue berkursi: kelola ketersediaan kursinya setelah disimpan.
                 @elseif (! auth()->user()->isAdmin())
                     Anda hanya dapat membuat event untuk destinasi <b>{{ auth()->user()->destination?->name }}</b>.
                 @else
@@ -35,15 +35,15 @@
 
             <div class="form-grid">
                 <div class="field full">
-                    <label>{{ $seatedOnly ? 'Nama Pertunjukan' : 'Nama Event' }}</label>
-                    <input type="text" name="title" value="{{ old('title', $booking->title) }}" required placeholder="{{ $seatedOnly ? 'Contoh: Ramayana Ballet' : 'Contoh: Corporate Gathering' }}">
+                    <label for="bookingTitle">{{ $seatedOnly ? 'Nama Pertunjukan' : 'Nama Event' }}</label>
+                    <input type="text" id="bookingTitle" name="title" value="{{ old('title', $booking->title) }}" required placeholder="{{ $seatedOnly ? 'Contoh: Ramayana Ballet' : 'Contoh: Corporate Gathering' }}">
                     @error('title') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="field">
-                    <label>Venue</label>
+                    <label for="venueSelect">Venue</label>
                     <select name="venue_id" id="venueSelect" required onchange="onVenueChange()">
-                        <option value="">— Pilih Venue —</option>
+                        <option value="">Pilih Venue</option>
                         @foreach ($venues->groupBy(fn ($v) => $v->destination->name) as $destinationName => $venueGroup)
                             <optgroup label="{{ $destinationName }}">
                                 @foreach ($venueGroup as $v)
@@ -59,9 +59,9 @@
                 </div>
 
                 <div class="field">
-                    <label>Jenis Event</label>
-                    <select name="event_type_id" required>
-                        <option value="">— Pilih Jenis —</option>
+                    <label for="eventTypeSelect">Jenis Event</label>
+                    <select id="eventTypeSelect" name="event_type_id" required>
+                        <option value="">Pilih Jenis</option>
                         @foreach ($eventTypes as $t)
                             <option value="{{ $t->id }}" @selected(old('event_type_id', $booking->event_type_id) == $t->id)>{{ $t->name }}</option>
                         @endforeach
@@ -70,30 +70,30 @@
                 </div>
 
                 <div class="field">
-                    <label>Tanggal Mulai</label>
+                    <label for="startDate">Tanggal Mulai</label>
                     <input type="text" id="startDate" data-flatpickr="date" name="start_date" value="{{ old('start_date', optional($booking->start_date)->format('Y-m-d')) }}" placeholder="Pilih tanggal" required autocomplete="off">
                     @error('start_date') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="field">
-                    <label>Tanggal Selesai</label>
+                    <label for="endDate">Tanggal Selesai</label>
                     <input type="text" id="endDate" data-flatpickr="date" name="end_date" value="{{ old('end_date', optional($booking->end_date)->format('Y-m-d')) }}" placeholder="Pilih tanggal" required autocomplete="off">
                     @error('end_date') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="field full loading-unloading-box">
-                    <div class="loading-unloading-title">Loading &amp; Unloading <span>(opsional — lacak jam kru setup/bongkar di luar jam event)</span></div>
+                    <div class="loading-unloading-title">Loading &amp; Unloading <span>(opsional: lacak jam kru setup/bongkar di luar jam event)</span></div>
                     <div class="loading-unloading-grid">
                         <div class="field">
-                            <label>Loading (kru mulai setup)</label>
-                            <input type="text" data-flatpickr="datetime" name="load_at" value="{{ old('load_at', optional($booking->load_at)->format('Y-m-d H:i')) }}" placeholder="Pilih tanggal & jam" autocomplete="off">
+                            <label for="loadAtInput">Loading (kru mulai setup)</label>
+                            <input type="text" id="loadAtInput" data-flatpickr="datetime" name="load_at" value="{{ old('load_at', optional($booking->load_at)->format('Y-m-d H:i')) }}" placeholder="Pilih tanggal & jam" autocomplete="off">
                             <div style="font-size:11px;color:var(--muted);margin-top:4px">Boleh sebelum tanggal mulai. Kosongkan jika tidak perlu dilacak.</div>
                             @error('load_at') <div class="field-error">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="field">
-                            <label>Unloading (venue kosong lagi)</label>
-                            <input type="text" data-flatpickr="datetime" name="unload_at" value="{{ old('unload_at', optional($booking->unload_at)->format('Y-m-d H:i')) }}" placeholder="Pilih tanggal & jam" autocomplete="off">
+                            <label for="unloadAtInput">Unloading (venue kosong lagi)</label>
+                            <input type="text" id="unloadAtInput" data-flatpickr="datetime" name="unload_at" value="{{ old('unload_at', optional($booking->unload_at)->format('Y-m-d H:i')) }}" placeholder="Pilih tanggal & jam" autocomplete="off">
                             <div style="font-size:11px;color:var(--muted);margin-top:4px">Boleh setelah tanggal selesai.</div>
                             @error('unload_at') <div class="field-error">{{ $message }}</div> @enderror
                         </div>
@@ -101,8 +101,8 @@
                 </div>
 
                 <div class="field full">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px;">
-                        <label id="clientLabel" aria-live="polite" style="margin-bottom:0;">Client/Organizer</label>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                        <label id="clientLabel" for="clientNameInput" aria-live="polite" style="margin-bottom:0;">Client/Organizer</label>
                         <label class="switch" title="Gunakan organizer yang berbeda dengan client">
                             <input type="checkbox" role="switch" aria-controls="organizerCol" aria-expanded="{{ old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id) ? 'true' : 'false' }}" name="is_separate_organizer" id="separateOrganizerToggle" value="1" @checked(old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id))>
                             <div class="switch-track">
@@ -113,7 +113,7 @@
                     </div>
                     <div class="organizer-container {{ old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id) ? 'is-active' : '' }}" id="organizerContainer">
                         <div class="client-col">
-                            <input type="text" name="client_name" list="clientList" value="{{ old('client_name', $booking->client?->name) }}" placeholder="Ketik nama client atau pilih dari daftar..." autocomplete="off">
+                            <input type="text" id="clientNameInput" name="client_name" list="clientList" value="{{ old('client_name', $booking->client?->name) }}" placeholder="Ketik nama client atau pilih dari daftar..." autocomplete="off">
                             <datalist id="clientList">
                                 @foreach ($clients as $c)
                                     <option value="{{ $c->name }}"></option>
@@ -122,7 +122,7 @@
                         </div>
                         <div class="organizer-col {{ old('is_separate_organizer', $booking->organizer_id && $booking->organizer_id !== $booking->client_id) ? 'is-active' : '' }}" id="organizerCol">
                             <div class="organizer-col-inner">
-                                <input type="text" name="organizer_name" id="organizerInput" list="organizerList" value="{{ old('organizer_name', $booking->organizer?->name) }}" placeholder="Ketik nama organizer..." autocomplete="off">
+                                <input type="text" name="organizer_name" id="organizerInput" aria-label="Nama Organizer" list="organizerList" value="{{ old('organizer_name', $booking->organizer?->name) }}" placeholder="Ketik nama organizer..." autocomplete="off">
                                 <datalist id="organizerList">
                                     @foreach ($clients as $c)
                                         <option value="{{ $c->name }}"></option>
@@ -134,9 +134,9 @@
                 </div>
 
                 <div class="field">
-                    <label>PIC Sales</label>
+                    <label for="picSelect">PIC Sales</label>
                     <select name="pic_user_id" id="picSelect">
-                        <option value="">— Belum ditentukan —</option>
+                        <option value="">Belum ditentukan</option>
                         @foreach ($salesUsers as $u)
                             <option value="{{ $u->id }}" data-destination-id="{{ $u->destination_id }}" @selected(old('pic_user_id', $booking->pic_user_id) == $u->id)>{{ $u->name }}{{ $u->isAdmin() ? ' (Admin)' : '' }}</option>
                         @endforeach
@@ -145,20 +145,20 @@
                 </div>
 
                 <div class="field">
-                    <label>Jumlah Tamu (estimasi)</label>
-                    <input type="number" min="1" name="guest_count" value="{{ old('guest_count', $booking->guest_count) }}">
+                    <label for="guestCountInput">Jumlah Tamu (estimasi)</label>
+                    <input type="number" id="guestCountInput" min="1" inputmode="numeric" name="guest_count" value="{{ old('guest_count', $booking->guest_count) }}">
                 </div>
 
                 <div class="field">
-                    <label>Harga/Price (Rp)</label>
-                    <input type="text" id="priceInput" value="{{ old('price', $booking->price ? number_format($booking->price, 0, '', '.') : '') }}" placeholder="Contoh: 1.500.000" autocomplete="off" oninput="formatPrice(this)">
+                    <label for="priceInput">Harga/Price (Rp)</label>
+                    <input type="text" id="priceInput" inputmode="numeric" value="{{ old('price', $booking->price ? number_format($booking->price, 0, '', '.') : '') }}" placeholder="Contoh: 1.500.000" autocomplete="off" oninput="formatPrice(this)">
                     <input type="hidden" name="price" id="priceHidden" value="{{ old('price', $booking->price) }}">
                     @error('price') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="field">
-                    <label>Status</label>
-                    <select name="status" required>
+                    <label for="statusSelect">Status</label>
+                    <select id="statusSelect" name="status" required>
                         @foreach (['hold' => 'Hold', 'tentative' => 'Tentative', 'fix' => 'Fix', 'cancelled' => 'Cancelled', 'maintenance' => 'Maintenance'] as $value => $label)
                             <option value="{{ $value }}" @selected(old('status', $booking->status) === $value)>{{ $label }}</option>
                         @endforeach
@@ -166,8 +166,8 @@
                 </div>
 
                 <div class="field full">
-                    <label>Catatan</label>
-                    <textarea name="notes" rows="4" placeholder="Kebutuhan teknis, setup, dll.">{{ old('notes', $booking->notes) }}</textarea>
+                    <label for="notesInput">Catatan</label>
+                    <textarea id="notesInput" name="notes" rows="4" placeholder="Kebutuhan teknis, setup, dll.">{{ old('notes', $booking->notes) }}</textarea>
                 </div>
             </div>
 
@@ -178,14 +178,19 @@
         </form>
     </section>
 
-    <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
-        <div style="background:#fff; padding:24px; border-radius:12px; width:400px; max-width:90%; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-            <h3 style="margin-top:0;">Konfirmasi Event</h3>
-            <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Mohon periksa kembali detail event berikut:</p>
-            <div id="summaryContent" style="margin-bottom:24px; font-size:13px; line-height:1.6; color:#000;"></div>
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button type="button" class="btn" onclick="document.getElementById('confirmModal').style.display='none'">Kembali</button>
-                <button type="button" class="btn primary" onclick="document.getElementById('bookingForm').submit()">Konfirmasi & Simpan</button>
+    <div id="confirmModal" class="modal-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+        <div class="modal-card" style="max-width:440px;">
+            <div class="modal-head">
+                <h3 id="confirmModalTitle" class="modal-title">Konfirmasi Event</h3>
+                <button type="button" class="modal-close" onclick="closeConfirmModal()" aria-label="Tutup konfirmasi" title="Tutup">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px; color:var(--muted); margin:0 0 16px;">Mohon periksa kembali detail event berikut:</p>
+                <div id="summaryContent" style="font-size:13px; line-height:1.6; color:#000;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="closeConfirmModal()">Kembali</button>
+                <button type="button" class="btn primary" onclick="document.getElementById('bookingForm').submit()">Konfirmasi &amp; Simpan</button>
             </div>
         </div>
     </div>
@@ -317,6 +322,23 @@
                 
                 document.getElementById('summaryContent').innerHTML = html;
                 document.getElementById('confirmModal').style.display = 'flex';
+            }
+        });
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('confirmModal');
+            if (e.key === 'Escape' && modal && modal.style.display !== 'none') {
+                closeConfirmModal();
             }
         });
     </script>

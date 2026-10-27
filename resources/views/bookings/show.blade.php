@@ -41,20 +41,20 @@
             <div>Kode Event</div><div><b>{{ $booking->code }}</b></div>
             <div>Venue</div><div>{{ $booking->venue->name }}</div>
             <div>Tanggal</div><div>{{ $booking->start_date->translatedFormat('d M Y') }} @if(!$booking->start_date->eq($booking->end_date)) &ndash; {{ $booking->end_date->translatedFormat('d M Y') }} @endif</div>
-            <div>Loading</div><div>{{ $booking->load_at ? $booking->load_at->translatedFormat('d M Y H:i') : '—' }}</div>
-            <div>Unloading</div><div>{{ $booking->unload_at ? $booking->unload_at->translatedFormat('d M Y H:i') : '—' }}</div>
+            <div>Loading</div><div>{{ $booking->load_at ? $booking->load_at->translatedFormat('d M Y H:i') : '-' }}</div>
+            <div>Unloading</div><div>{{ $booking->unload_at ? $booking->unload_at->translatedFormat('d M Y H:i') : '-' }}</div>
             <div>Jenis Event</div><div>{{ $booking->eventType->name }}</div>
             @if($booking->organizer_id && $booking->organizer_id !== $booking->client_id)
-                <div>Client</div><div>{{ $booking->client?->name ?? '—' }}</div>
-                <div>Organizer</div><div>{{ $booking->organizer?->name ?? '—' }}</div>
+                <div>Client</div><div>{{ $booking->client?->name ?? '-' }}</div>
+                <div>Organizer</div><div>{{ $booking->organizer?->name ?? '-' }}</div>
             @else
-                <div>Client/Organizer</div><div>{{ $booking->client?->name ?? '—' }}</div>
+                <div>Client/Organizer</div><div>{{ $booking->client?->name ?? '-' }}</div>
             @endif
-            <div>PIC Sales</div><div>{{ $booking->pic?->name ?? '—' }}</div>
-            <div>Jumlah Tamu</div><div>{{ $booking->guest_count ? number_format($booking->guest_count).' orang' : '—' }}</div>
-            <div>Harga</div><div>{{ $booking->price !== null ? 'Rp '.number_format($booking->price, 0, ',', '.') : '—' }}</div>
+            <div>PIC Sales</div><div>{{ $booking->pic?->name ?? '-' }}</div>
+            <div>Jumlah Tamu</div><div>{{ $booking->guest_count ? number_format($booking->guest_count).' orang' : '-' }}</div>
+            <div>Harga</div><div>{{ $booking->price !== null ? 'Rp '.number_format($booking->price, 0, ',', '.') : '-' }}</div>
             <div>Dibuat oleh</div><div>{{ $booking->creator->name }} &middot; {{ $booking->created_at->translatedFormat('d M Y H:i') }}</div>
-            <div>Catatan</div><div>{{ $booking->notes ?: '—' }}</div>
+            <div>Catatan</div><div>{{ $booking->notes ?: '-' }}</div>
             @if ($booking->venue->is_seated)
                 @php
                     $totalSeats = $booking->venue->seats()->count();
@@ -66,7 +66,7 @@
         </div>
 
         @cannot('update', $booking)
-            <p style="font-size:12px;color:var(--muted);margin-top:16px">Event ini milik destinasi lain — Anda hanya dapat melihatnya, bukan mengubahnya.</p>
+            <p style="font-size:12px;color:var(--muted);margin-top:16px">Event ini milik destinasi lain (Anda hanya dapat melihatnya, bukan mengubahnya).</p>
         @endcannot
     </section>
 

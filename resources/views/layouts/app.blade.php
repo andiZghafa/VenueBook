@@ -2,10 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0c1d38">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d243c">
+    <meta name="color-scheme" content="light">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') — Venue Booking</title>
+    <title>@yield('title', 'Dashboard') | Venue Booking</title>
     <link rel="icon" type="image/png" href="{{ asset('images/Venue Booking Logo-02.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -69,13 +71,13 @@
         </nav>
 
         <div class="sidebar-foot">
-            <div class="user-card" title="{{ auth()->user()->name }} — {{ ucfirst(auth()->user()->role) }}">
+            <div class="user-card" title="{{ auth()->user()->name }} ({{ ucfirst(auth()->user()->role) }})">
                 <span class="user-avatar" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.418 3.582-7 8-7s8 2.582 8 7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg>
                 </span>
                 <div class="user-info nav-label">
                     <b>{{ auth()->user()->name }}</b>
-                    <span>{{ auth()->user()->isSuperAdmin() ? 'Super Admin' : (auth()->user()->isAdmin() ? 'Admin' : 'Sales — '.auth()->user()->destination?->name) }}</span>
+                    <span>{{ auth()->user()->isSuperAdmin() ? 'Super Admin' : (auth()->user()->isAdmin() ? 'Admin' : 'Sales · '.auth()->user()->destination?->name) }}</span>
                     <span class="badge-role">{{ auth()->user()->role }}</span>
                 </div>
             </div>
@@ -89,7 +91,7 @@
         </div>
     </aside>
 
-    <button type="button" class="sidebar-toggle" onclick="toggleSidebar()" title="Ciutkan/lebarkan menu">
+    <button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Ciutkan atau lebarkan menu navigasi" title="Ciutkan/lebarkan menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 7-5 5 5 5"/><path d="m15 7 5 5-5 5"/></svg>
     </button>
 
@@ -98,13 +100,13 @@
 
         <main class="main">
             @if (session('success'))
-                <div class="alert success">{{ session('success') }}</div>
+                <div class="alert success" role="status">{{ session('success') }}</div>
             @endif
             @if (session('error'))
-                <div class="alert error">{{ session('error') }}</div>
+                <div class="alert error" role="alert">{{ session('error') }}</div>
             @endif
             @if ($errors->any())
-                <div class="alert error">{{ $errors->first() }}</div>
+                <div class="alert error" role="alert">{{ $errors->first() }}</div>
             @endif
 
             @yield('content')

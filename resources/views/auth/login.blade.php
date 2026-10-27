@@ -2,9 +2,11 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0c1d38">
-    <title>Masuk — Venue Booking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#a7ba68">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d243c">
+    <meta name="color-scheme" content="light">
+    <title>Masuk | Venue Booking</title>
     <link rel="icon" type="image/png" href="{{ asset('images/Venue Booking Logo-02.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -25,11 +27,11 @@
                 @csrf
                 <div class="field">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" autocomplete="email" autocapitalize="none" autocorrect="off" enterkeyhint="next" required autofocus>
                 </div>
                 <div class="field">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" autocomplete="current-password" enterkeyhint="go" required>
                 </div>
                 <button type="submit" class="btn primary">Masuk</button>
             </form>

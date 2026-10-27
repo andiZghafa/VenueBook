@@ -28,7 +28,7 @@
                         $blocked = $booking->bookingSeats->where('status', 'blocked')->count();
                         $available = $total - $booked - $blocked;
                     @endphp
-                    <tr onclick="window.location='{{ route('bookings.seats.edit', $booking) }}'" style="cursor:pointer">
+                    <tr tabindex="0" role="link" aria-label="Kelola kursi {{ $booking->title }}" onclick="window.location='{{ route('bookings.seats.edit', $booking) }}'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location='{{ route('bookings.seats.edit', $booking) }}';}" style="cursor:pointer">
                         <td>{{ $booking->start_date->translatedFormat('d M Y') }}</td>
                         <td>{{ $booking->venue->destination->name }}</td>
                         <td>{{ $booking->venue->name }}</td>
@@ -38,7 +38,7 @@
                         <td><a href="{{ route('bookings.seats.edit', $booking) }}" class="btn" onclick="event.stopPropagation()">Kelola Kursi</a></td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" style="color:var(--muted)">Belum ada jadwal pertunjukan di venue berkursi.</td></tr>
+                    <tr><td colspan="7" style="color:var(--muted); padding:20px 10px;">Belum ada jadwal pertunjukan di venue berkursi. Klik <b>+ Tambah Jadwal</b> di kanan atas untuk membuat jadwal baru.</td></tr>
                 @endforelse
             </tbody>
         </table>

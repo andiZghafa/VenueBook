@@ -20,17 +20,17 @@
 
             <div class="form-grid">
                 <div class="field full">
-                    <label>Nama</label>
-                    <input type="text" name="name" value="{{ old('name', $user->name) }}" required>
+                    <label for="user-name">Nama</label>
+                    <input type="text" id="user-name" name="name" value="{{ old('name', $user->name) }}" required>
                     @error('name') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
                 <div class="field full">
-                    <label>Email</label>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}" required>
+                    <label for="user-email">Email</label>
+                    <input type="email" id="user-email" name="email" value="{{ old('email', $user->email) }}" autocomplete="email" autocapitalize="none" autocorrect="off" required>
                     @error('email') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
                 <div class="field">
-                    <label>Peran</label>
+                    <label for="role">Peran</label>
                     <select name="role" id="role" onchange="document.getElementById('destination-field').style.display = this.value === 'sales' ? '' : 'none'">
                         <option value="sales" @selected(old('role', $user->role) === 'sales')>Sales</option>
                         <option value="admin" @selected(old('role', $user->role) === 'admin')>Admin</option>
@@ -40,9 +40,9 @@
                     </select>
                 </div>
                 <div class="field" id="destination-field" style="display:{{ in_array(old('role', $user->role), ['admin', 'superadmin']) ? 'none' : '' }}">
-                    <label>Destinasi (unit sales)</label>
-                    <select name="destination_id">
-                        <option value="">— Pilih Destinasi —</option>
+                    <label for="user-destination">Destinasi (unit sales)</label>
+                    <select id="user-destination" name="destination_id">
+                        <option value="">Pilih Destinasi</option>
                         @foreach ($destinations as $d)
                             <option value="{{ $d->id }}" @selected(old('destination_id', $user->destination_id) == $d->id)>{{ $d->name }}</option>
                         @endforeach
@@ -50,8 +50,8 @@
                     @error('destination_id') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
                 <div class="field">
-                    <label>Password {{ $user->exists ? '(kosongkan jika tidak diubah)' : '' }}</label>
-                    <input type="password" name="password" {{ $user->exists ? '' : 'required' }}>
+                    <label for="user-password">Password {{ $user->exists ? '(kosongkan jika tidak diubah)' : '' }}</label>
+                    <input type="password" id="user-password" name="password" {{ $user->exists ? '' : 'required' }}>
                     @error('password') <div class="field-error">{{ $message }}</div> @enderror
                 </div>
             </div>

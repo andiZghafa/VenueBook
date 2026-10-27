@@ -12,12 +12,12 @@
     </div>
     <div class="field">
         <label for="{{ $prefix }}email">Email</label>
-        <input type="email" id="{{ $prefix }}email" name="email" value="{{ old('email', $client?->email) }}" placeholder="email@contoh.com">
+        <input type="email" id="{{ $prefix }}email" name="email" value="{{ old('email', $client?->email) }}" autocomplete="email" autocapitalize="none" autocorrect="off" placeholder="email@contoh.com">
         @error('email') <div class="field-error">{{ $message }}</div> @enderror
     </div>
     <div class="field">
         <label for="{{ $prefix }}phone">Telepon</label>
-        <input type="text" id="{{ $prefix }}phone" name="phone" value="{{ old('phone', $client?->phone) }}" placeholder="08xxxxxxxxxx">
+        <input type="tel" id="{{ $prefix }}phone" name="phone" inputmode="tel" autocomplete="tel" value="{{ old('phone', $client?->phone) }}" placeholder="08xxxxxxxxxx">
         @error('phone') <div class="field-error">{{ $message }}</div> @enderror
     </div>
     <div class="field full">

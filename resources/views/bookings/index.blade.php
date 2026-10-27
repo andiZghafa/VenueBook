@@ -17,7 +17,7 @@
         <form id="filterForm" method="GET" action="{{ route('bookings.index') }}" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;padding:16px">
             <div class="field" style="min-width:200px;margin:0">
                 <label for="filterSearch">Cari</label>
-                <input type="text" id="filterSearch" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client, venue...">
+                <input type="search" id="filterSearch" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nama event, kode, client, venue..." enterkeyhint="search">
             </div>
             <div class="field" style="min-width:180px;margin:0">
                 <label for="filterDestination">Destinasi</label>
@@ -33,7 +33,7 @@
                 <select id="filterVenue" name="venue_id">
                     <option value="">Semua Venue</option>
                     @foreach ($venues as $v)
-                        <option value="{{ $v->id }}" data-destination-id="{{ $v->destination_id }}" @selected(($filters['venue_id'] ?? null) == $v->id)>{{ $v->destination->name }} — {{ $v->name }}</option>
+                        <option value="{{ $v->id }}" data-destination-id="{{ $v->destination_id }}" @selected(($filters['venue_id'] ?? null) == $v->id)>{{ $v->destination->name }} · {{ $v->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -55,29 +55,29 @@
                     @endforeach
                 </select>
             </div>
-            <a href="{{ route('bookings.index') }}" id="filterReset" class="btn">Reset</a>
+            <a href="{{ route('bookings.index') }}" id="filterReset" class="btn btn-reset">Reset</a>
         </form>
     </section>
 
-    <section class="panel table-card" id="eventsTableCard">
+    <section class="panel table-card" id="eventsTableCard" aria-live="polite">
         <table class="table">
             <thead>
                 <tr><th>Kode</th><th>Tanggal</th><th>Destinasi</th><th>Venue</th><th>Nama Event</th><th>Harga</th><th>Status</th><th>PIC</th></tr>
             </thead>
             <tbody>
                 @forelse ($bookings as $booking)
-                    <tr onclick="window.location='{{ route('bookings.show', $booking) }}'" style="cursor:pointer">
+                    <tr tabindex="0" role="link" aria-label="Buka detail {{ $booking->title }}" onclick="window.location='{{ route('bookings.show', $booking) }}'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location='{{ route('bookings.show', $booking) }}';}" style="cursor:pointer">
                         <td>{{ $booking->code }}</td>
                         <td>{{ $booking->start_date->translatedFormat('d M Y') }}@if(!$booking->start_date->eq($booking->end_date)) &ndash; {{ $booking->end_date->translatedFormat('d M Y') }}@endif</td>
                         <td>{{ $booking->venue->destination->name }}</td>
                         <td>{{ $booking->venue->name }}</td>
                         <td>{{ $booking->title }}</td>
-                        <td>{{ $booking->price !== null ? 'Rp '.number_format($booking->price, 0, ',', '.') : '—' }}</td>
+                        <td>{{ $booking->price !== null ? 'Rp '.number_format($booking->price, 0, ',', '.') : '-' }}</td>
                         <td><span class="pill {{ $booking->status }}">{{ ucfirst($booking->status) }}</span></td>
-                        <td>{{ $booking->pic?->name ?? '—' }}</td>
+                        <td>{{ $booking->pic?->name ?? '-' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" style="color:var(--muted)">Belum ada event yang cocok dengan filter ini.</td></tr>
+                    <tr><td colspan="8" style="color:var(--muted)">Belum ada event yang cocok dengan filter ini. Klik "Reset" untuk menampilkan seluruh jadwal atau "+ Tambah Event" untuk membuat baru.</td></tr>
                 @endforelse
             </tbody>
         </table>

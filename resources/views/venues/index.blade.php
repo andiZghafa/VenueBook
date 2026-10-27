@@ -25,9 +25,9 @@
                         <tr>
                             <td><b>{{ $venue->name }}</b></td>
                             <td>{{ ucfirst($venue->type) }}</td>
-                            <td>{{ $venue->capacity ? number_format($venue->capacity).' orang' : '—' }}</td>
+                            <td>{{ $venue->capacity ? number_format($venue->capacity).' orang' : '-' }}</td>
                             <td>{{ $venue->size_sqm ? number_format($venue->size_sqm).' m²' : 'Belum ada data' }}</td>
-                            <td>{{ $venue->is_active ? 'Aktif' : 'Nonaktif' }}</td>
+                            <td><span class="pill {{ $venue->is_active ? 'fix' : 'maintenance' }}">{{ $venue->is_active ? 'Aktif' : 'Nonaktif' }}</span></td>
                             <td class="table-actions">
                                 <a href="{{ route('venues.edit', $venue) }}" class="btn">Edit</a>
                                 <form method="POST" action="{{ route('venues.destroy', $venue) }}" onsubmit="return confirm('Hapus venue ini?')">
@@ -38,7 +38,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" style="color:var(--muted)">Belum ada venue di destinasi ini.</td></tr>
+                        <tr><td colspan="6" style="color:var(--muted); padding:20px 10px;">Belum ada venue di destinasi ini. Klik <b>+ Tambah Venue</b> di kanan atas untuk menambahkan venue baru.</td></tr>
                     @endforelse
                 </tbody>
             </table>

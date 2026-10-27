@@ -24,7 +24,7 @@
                         <td><b>{{ $user->name }}</b></td>
                         <td>{{ $user->email }}</td>
                         <td><span class="pill {{ in_array($user->role, ['admin', 'superadmin']) ? 'fix' : 'tentative' }}">{{ ucfirst($user->role) }}</span></td>
-                        <td>{{ $user->destination?->name ?? '—' }}</td>
+                        <td>{{ $user->destination?->name ?? '-' }}</td>
                         <td>
                             <div class="table-actions">
                                 @if (auth()->user()->isSuperAdmin() || !$user->isSuperAdmin())
