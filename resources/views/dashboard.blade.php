@@ -161,11 +161,11 @@
                 @endforeach
             </div>
             <div class="legend">
-                <span><i class="dot" style="background:#f59e0b"></i>Hold</span>
-                <span><i class="dot" style="background:#8b5cf6"></i>Tentative</span>
+                <span><i class="dot" style="background:var(--yellow)"></i>Hold</span>
+                <span><i class="dot" style="background:var(--purple)"></i>Tentative</span>
                 <span><i class="dot" style="background:var(--green)"></i>Fix</span>
-                <span><i class="dot" style="background:#dc2626"></i>Cancelled</span>
-                <span><i class="dot" style="background:#64748b"></i>Maintenance/Blackout</span>
+                <span><i class="dot" style="background:var(--red)"></i>Cancelled</span>
+                <span><i class="dot" style="background:var(--gray)"></i>Maintenance/Blackout</span>
                 @if (!empty($hasAnyUpcomingHighlight))
                     <span class="legend-upcoming"><i class="dot" style="background:#f59e0b; box-shadow: 0 0 0 1px #c2410c;"></i> Tanggal dengan sorot oranye</span>
                 @endif
@@ -194,6 +194,12 @@
     <script>
         const EVENTS = @json($eventDetails);
 
+        function esc(value) {
+            const el = document.createElement('div');
+            el.textContent = value ?? '';
+            return el.innerHTML;
+        }
+
         function closeDetail() {
             document.getElementById('calendarContent').classList.remove('has-detail');
             document.getElementById('detail').hidden = true;
@@ -215,28 +221,28 @@
             document.getElementById('detail').hidden = false;
 
             let html = '';
-            html += `<span class="badge-destination">${e.destination}</span>`;
-            html += `<span class="pill ${e.status}" style="display:inline-block;margin-left:8px">${e.statusLabel}</span>`;
+            html += `<span class="badge-destination">${esc(e.destination)}</span>`;
+            html += `<span class="pill ${e.status}" style="display:inline-block;margin-left:8px">${esc(e.statusLabel)}</span>`;
 
             if (e.isLoadingOrUnloading) {
                 html += `<div class="warn-banner"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:6px;" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Event ini sedang dalam periode loading atau unloading.</div>`;
             }
 
-            html += `<h2>${e.title}</h2>`;
-            html += `<p class="desc">${e.client ?? '-'}</p>`;
+            html += `<h2>${esc(e.title)}</h2>`;
+            html += `<p class="desc">${esc(e.client ?? '-')}</p>`;
             html += `<hr style="border:none;border-top:1px solid #e2e8f0">`;
             html += `<div class="kv">`;
-            html += `<div>Kode</div><div><b>${e.code}</b></div>`;
-            html += `<div>Venue</div><div>${e.venue}</div>`;
-            html += `<div>Tanggal</div><div>${e.dateLabel}</div>`;
-            html += `<div>Loading</div><div>${e.loadAt ?? '-'}</div>`;
-            html += `<div>Unloading</div><div>${e.unloadAt ?? '-'}</div>`;
-            html += `<div>Jenis Event</div><div>${e.eventType}</div>`;
-            html += `<div>Status</div><div>${e.statusLabel}</div>`;
-            html += `<div>PIC Sales</div><div>${e.pic ?? '-'}</div>`;
-            html += `<div>Jumlah Tamu</div><div>${e.guestCount ? e.guestCount + ' orang' : '-'}</div>`;
-            html += `<div>Harga</div><div>${e.price}</div>`;
-            html += `<div>Catatan</div><div>${e.notes ?? '-'}</div>`;
+            html += `<div>Kode</div><div><b>${esc(e.code)}</b></div>`;
+            html += `<div>Venue</div><div>${esc(e.venue)}</div>`;
+            html += `<div>Tanggal</div><div>${esc(e.dateLabel)}</div>`;
+            html += `<div>Loading</div><div>${esc(e.loadAt ?? '-')}</div>`;
+            html += `<div>Unloading</div><div>${esc(e.unloadAt ?? '-')}</div>`;
+            html += `<div>Jenis Event</div><div>${esc(e.eventType)}</div>`;
+            html += `<div>Status</div><div>${esc(e.statusLabel)}</div>`;
+            html += `<div>PIC Sales</div><div>${esc(e.pic ?? '-')}</div>`;
+            html += `<div>Jumlah Tamu</div><div>${e.guestCount ? esc(e.guestCount) + ' orang' : '-'}</div>`;
+            html += `<div>Harga</div><div>${esc(e.price)}</div>`;
+            html += `<div>Catatan</div><div>${esc(e.notes ?? '-')}</div>`;
             html += `</div>`;
             html += `<div class="actions-row">`;
             html += `<a href="${e.showUrl}" class="btn">Detail Lengkap</a>`;

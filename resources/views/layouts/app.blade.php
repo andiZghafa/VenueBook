@@ -22,8 +22,8 @@
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-head">
             <a href="{{ route('dashboard') }}" class="brand" aria-label="Venue Booking Dashboard">
-                <img src="{{ asset('images/Venue Booking Logo-03.png') }}" alt="Venue Booking" class="brand-logo logo-full">
-                <img src="{{ asset('images/Venue Booking Logo-02.png') }}" alt="Venue Booking" class="brand-logo logo-icon">
+                <img src="{{ asset('images/Venue Booking Logo-03.png') }}" alt="Venue Booking" class="brand-logo logo-full" width="210" height="56">
+                <img src="{{ asset('images/Venue Booking Logo-02.png') }}" alt="Venue Booking" class="brand-logo logo-icon" width="42" height="42">
             </a>
             <button type="button" class="mobile-sidebar-close" onclick="closeMobileNav()" aria-label="Tutup menu navigasi" title="Tutup">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

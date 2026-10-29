@@ -9,3 +9,13 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Auto-detect text files and normalize to LF in Git
+* text=auto
+
+# Keep shell scripts as LF strictly
+*.sh text eol=lf
+
+# Keep Windows batch files as CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf

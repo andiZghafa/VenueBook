@@ -14,7 +14,7 @@
 <div class="login-wrap" style="background-image: url('{{ asset('images/bg.jpeg') }}')">
     <div class="login-area">
         <div class="login-card">
-            <div class="brand"><img src="{{ asset('images/Venue Booking Logo-Login.png') }}" alt="Venue Booking" class="brand-logo"></div>
+            <div class="brand"><img src="{{ asset('images/Venue Booking Logo-Login.png') }}" alt="Venue Booking" class="brand-logo" width="175" height="175" fetchpriority="high"></div>
 
             <h1 class="login-title">Selamat Datang Kembali!</h1>
             <p class="login-sub">Silakan masuk untuk mengelola pemesanan venue di kawasan wisata Borobudur, Prambanan, dan Ratu Boko.</p>

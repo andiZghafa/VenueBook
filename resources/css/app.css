@@ -1539,7 +1539,7 @@ html.sidebar-collapsed .user-card {
 
 .login-wrap .global-footer {
     background: rgba(143, 168, 79, 0.96);
-    color: #0d243c;
+    color: #fff;
     backdrop-filter: blur(4px);
     padding: 10px max(20px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px));
     flex-shrink: 0;
@@ -1630,7 +1630,7 @@ html.sidebar-collapsed .user-card {
 
 .global-footer {
     background: #8fa84f;
-    color: #0d243c;
+    color: #fff;
     font-size: 12.5px;
     font-weight: 700;
     text-align: center;
@@ -2673,19 +2673,16 @@ span.flatpickr-weekday {
 }
 
 .notif-item.is-unread {
-    background: #fffdfa;
-    border-left: 3px solid #f59e0b;
+    background: #fffbeb;
 }
 
 .notif-item.is-read {
     background: #ffffff;
-    border-left: 3px solid transparent;
     opacity: 0.82;
 }
 
 .notif-item.is-urgent {
     background: #fff7ed;
-    border-left: 3px solid #ea580c;
 }
 
 .notif-item.is-urgent.is-read {

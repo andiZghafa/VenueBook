@@ -1,3 +1,10 @@
 {
-    "guidelines": true
+    "agents": [
+        "antigravity"
+    ],
+    "guidelines": true,
+    "agents": [
+        "antigravity"
+    ]
 }
+
