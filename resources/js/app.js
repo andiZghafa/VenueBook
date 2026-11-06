@@ -39,4 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    const exportStartPicker = datePickers.get('exportStartDate');
+    const exportEndPicker = datePickers.get('exportEndDate');
+
+    if (exportStartPicker && exportEndPicker) {
+        exportStartPicker.config.onChange.push((selectedDates) => {
+            exportEndPicker.set('minDate', selectedDates[0] || null);
+        });
+    }
 });

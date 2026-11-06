@@ -24,7 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
     Route::get('notifications/{booking}/go', [NotificationController::class, 'go'])->name('notifications.go');
 
+    Route::get('export', [BookingController::class, 'exportForm'])->name('bookings.export.index');
     Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('bookings/export', [BookingController::class, 'export'])->name('bookings.export');
     Route::get('bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');

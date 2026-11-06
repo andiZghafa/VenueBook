@@ -49,6 +49,34 @@ class Booking extends Model
     }
 
     /**
+     * First calendar day the venue is occupied, including crew load-in if earlier than start_date.
+     */
+    public function occupiedStartDate(): Carbon
+    {
+        $start = $this->start_date->copy()->startOfDay();
+
+        if ($this->load_at) {
+            return $start->min($this->load_at->copy()->startOfDay());
+        }
+
+        return $start;
+    }
+
+    /**
+     * Last calendar day the venue is occupied, including crew load-out if later than end_date.
+     */
+    public function occupiedEndDate(): Carbon
+    {
+        $end = $this->end_date->copy()->startOfDay();
+
+        if ($this->unload_at) {
+            return $end->max($this->unload_at->copy()->startOfDay());
+        }
+
+        return $end;
+    }
+
+    /**
      * True if right now falls in the crew's load-in window (before the booked dates
      * start) or load-out window (after the booked dates end) — i.e. the venue is still
      * occupied by setup/teardown even though the "event" itself hasn't started or is over.

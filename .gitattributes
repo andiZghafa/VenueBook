@@ -18,4 +18,4 @@ CHANGELOG.md export-ignore
 
 # Keep Windows batch files as CRLF
 *.bat text eol=crlf
-*.cmd text eol=crlf
+*.cmd text eol=crlf 

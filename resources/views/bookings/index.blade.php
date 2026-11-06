@@ -9,6 +9,10 @@
             <h1>Daftar Event</h1>
         </div>
         <div class="actions">
+            <a href="{{ route('bookings.export.index', request()->query()) }}" id="exportExcelBtn" class="btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-3px;" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Excel
+            </a>
             <a href="{{ route('bookings.create') }}" class="btn primary">+ Tambah Event</a>
         </div>
     </div>
@@ -94,6 +98,7 @@
             const statusSelect = document.getElementById('filterStatus');
             const picSelect = document.getElementById('filterPic');
             const resetBtn = document.getElementById('filterReset');
+            const exportExcelBtn = document.getElementById('exportExcelBtn');
             const tableCard = document.getElementById('eventsTableCard');
 
             let abortController = null;
@@ -131,6 +136,18 @@
                 if (picSelect.value) url.searchParams.set('pic_user_id', picSelect.value);
                 if (page && page > 1) url.searchParams.set('page', page);
                 return url.toString();
+            }
+
+            function updateExportUrl() {
+                if (!exportExcelBtn) return;
+                const exportUrl = new URL('{{ route('bookings.export.index') }}', window.location.origin);
+                const q = searchInput.value.trim();
+                if (q) exportUrl.searchParams.set('q', q);
+                if (destSelect.value) exportUrl.searchParams.set('destination_id', destSelect.value);
+                if (venueSelect.value) exportUrl.searchParams.set('venue_id', venueSelect.value);
+                if (statusSelect.value) exportUrl.searchParams.set('status', statusSelect.value);
+                if (picSelect.value) exportUrl.searchParams.set('pic_user_id', picSelect.value);
+                exportExcelBtn.href = exportUrl.toString();
             }
 
             async function loadTable(url, pushState = true) {
@@ -175,6 +192,7 @@
 
             function applyFilters() {
                 const url = buildUrl();
+                updateExportUrl();
                 loadTable(url, true);
             }
 
@@ -230,6 +248,7 @@
                 venueSelect.value = currentUrl.searchParams.get('venue_id') || '';
                 statusSelect.value = currentUrl.searchParams.get('status') || '';
                 picSelect.value = currentUrl.searchParams.get('pic_user_id') || '';
+                updateExportUrl();
                 loadTable(window.location.href, false);
             });
         });

@@ -8,12 +8,16 @@ use App\Models\Destination;
 use App\Models\EventType;
 use App\Models\User;
 use App\Models\Venue;
+use App\Services\BookingExcelExportService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BookingController extends Controller
 {
@@ -37,6 +41,169 @@ class BookingController extends Controller
             'eventTypes' => EventType::orderBy('name')->get(),
             'salesUsers' => User::where('role', '!=', 'superadmin')->orderBy('name')->get(),
         ]);
+    }
+
+    public function exportForm(Request $request, BookingExcelExportService $exporter): View
+    {
+        $user = $request->user();
+        [$startDate, $endDate] = $this->resolveExportDateRange($request);
+        $sort = $this->resolveExportSort($request);
+
+        $filters = $request->only(['destination_id', 'venue_id', 'event_type_id', 'status', 'pic_user_id', 'q']);
+        if (! $user->isAdmin()) {
+            $filters['destination_id'] = $user->destination_id;
+        }
+
+        $query = $this->buildExportQuery($request);
+        $allMatching = $query->get();
+
+        $availableColumns = $exporter->availableColumns();
+        $rawColumns = $request->input('columns');
+        if (is_string($rawColumns)) {
+            $rawColumns = array_filter(explode(',', $rawColumns));
+        }
+
+        $selectedColumns = is_array($rawColumns) && $rawColumns !== []
+            ? $exporter->resolveColumnKeys($rawColumns)
+            : array_keys($availableColumns);
+
+        $previewRows = $allMatching->take(10)->map(function (Booking $booking) use ($exporter) {
+            return [
+                'id' => $booking->id,
+                'status_key' => $booking->status,
+                'cells' => $exporter->mapKeyedRow($booking),
+            ];
+        })->values();
+
+        $venuesQuery = Venue::with('destination')->orderBy('name');
+        if (! $user->isAdmin()) {
+            $venuesQuery->where('destination_id', $user->destination_id);
+        }
+
+        return view('bookings.export', [
+            'filters' => $filters,
+            'startDate' => $startDate?->format('Y-m-d') ?? '',
+            'endDate' => $endDate?->format('Y-m-d') ?? '',
+            'availableColumns' => $availableColumns,
+            'defaultFormColumns' => $exporter->defaultColumnKeys(),
+            'selectedColumns' => $selectedColumns,
+            'totalMatching' => $allMatching->count(),
+            'previewRows' => $previewRows,
+            'destinations' => Destination::orderBy('name')->get(),
+            'venues' => $venuesQuery->get(),
+            'salesUsers' => User::where('role', '!=', 'superadmin')->orderBy('name')->get(),
+        ]);
+    }
+
+    public function export(Request $request, BookingExcelExportService $exporter): BinaryFileResponse
+    {
+        [$startDate, $endDate] = $this->resolveExportDateRange($request);
+        $bookings = $this->buildExportQuery($request)->get();
+
+        $rawColumns = $request->input('columns');
+        if (is_string($rawColumns)) {
+            $rawColumns = array_filter(explode(',', $rawColumns));
+        }
+        $columns = is_array($rawColumns) && $rawColumns !== []
+            ? $exporter->resolveColumnKeys($rawColumns)
+            : null;
+
+        if ($startDate && $endDate) {
+            $filename = sprintf('daftar-event-%s-sd-%s.xlsx', $startDate->format('Y-m-d'), $endDate->format('Y-m-d'));
+        } elseif ($startDate) {
+            $filename = sprintf('daftar-event-mulai-%s.xlsx', $startDate->format('Y-m-d'));
+        } elseif ($endDate) {
+            $filename = sprintf('daftar-event-sampai-%s.xlsx', $endDate->format('Y-m-d'));
+        } else {
+            $filename = 'daftar-event-'.now()->format('Y-m-d').'.xlsx';
+        }
+
+        return $exporter->download($bookings, $filename, $columns);
+    }
+
+    /**
+     * @return array{0: ?Carbon, 1: ?Carbon}
+     */
+    private function resolveExportDateRange(Request $request): array
+    {
+        $startDate = null;
+        $endDate = null;
+
+        if ($request->filled('start_date')) {
+            try {
+                $startDate = Carbon::parse((string) $request->query('start_date'))->startOfDay();
+            } catch (\Throwable) {
+                $startDate = null;
+            }
+        }
+
+        if ($request->filled('end_date')) {
+            try {
+                $endDate = Carbon::parse((string) $request->query('end_date'))->endOfDay();
+            } catch (\Throwable) {
+                $endDate = null;
+            }
+        }
+
+        if (! $startDate && ! $endDate && $request->filled('y') && $request->filled('m')) {
+            try {
+                $month = Carbon::create((int) $request->query('y'), (int) $request->query('m'), 1)->startOfMonth();
+                $startDate = $month->copy()->startOfDay();
+                $endDate = $month->copy()->endOfMonth()->endOfDay();
+            } catch (\Throwable) {
+                // Ignore invalid month/year parameters
+            }
+        }
+
+        if ($startDate && $endDate && $startDate->gt($endDate)) {
+            [$startDate, $endDate] = [$endDate->copy()->startOfDay(), $startDate->copy()->endOfDay()];
+        }
+
+        return [$startDate, $endDate];
+    }
+
+    private function resolveExportSort(Request $request): string
+    {
+        $allowed = ['start_date_desc', 'start_date_asc', 'price_desc', 'title_asc'];
+        $sort = (string) $request->query('sort', 'start_date_desc');
+
+        return in_array($sort, $allowed, true) ? $sort : 'start_date_desc';
+    }
+
+    /**
+     * @return Builder<Booking>
+     */
+    private function buildExportQuery(Request $request): Builder
+    {
+        $filters = $request->only(['destination_id', 'venue_id', 'event_type_id', 'status', 'pic_user_id', 'q']);
+        $user = $request->user();
+
+        if (! $user->isAdmin()) {
+            $destinationsAllowed = $user->destinationIds();
+            $filters['destination_id'] = empty($destinationsAllowed) ? -1 : $user->destination_id;
+        }
+
+        [$startDate, $endDate] = $this->resolveExportDateRange($request);
+        $sort = $this->resolveExportSort($request);
+
+        $query = Booking::filter($filters)
+            ->with(['venue.destination', 'eventType', 'client', 'organizer', 'pic']);
+
+        if ($startDate && $endDate) {
+            $query->whereDate('start_date', '<=', $endDate->toDateString())
+                ->whereDate('end_date', '>=', $startDate->toDateString());
+        } elseif ($startDate) {
+            $query->whereDate('end_date', '>=', $startDate->toDateString());
+        } elseif ($endDate) {
+            $query->whereDate('start_date', '<=', $endDate->toDateString());
+        }
+
+        return match ($sort) {
+            'start_date_asc' => $query->orderBy('start_date')->orderBy('id'),
+            'price_desc' => $query->orderByDesc('price')->orderByDesc('start_date'),
+            'title_asc' => $query->orderBy('title')->orderByDesc('start_date'),
+            default => $query->orderByDesc('start_date')->orderByDesc('id'),
+        };
     }
 
     public function create(Request $request): View

@@ -61,17 +61,140 @@ class DashboardController extends Controller
 
         $venueCount = $venues->count();
         $daysInMonth = $month->daysInMonth;
-        $bookedVenueDays = $monthBookings
-            ->reject(fn (Booking $b) => $b->status === 'cancelled')
-            ->sum(function (Booking $b) use ($month) {
-                $start = $b->start_date->max($month->copy()->startOfMonth());
-                $end = $b->end_date->min($month->copy()->endOfMonth());
+        $monthStart = $month->copy()->startOfMonth();
+        $monthEnd = $month->copy()->endOfMonth();
 
-                return $start->diffInDays($end) + 1;
-            });
-        $utilization = $venueCount > 0
-            ? min(100, round(($bookedVenueDays / ($venueCount * $daysInMonth)) * 100))
+        // Scope venues for utilisation analysis: respect specific venue filter or all accessible venues
+        $targetVenues = ($filters['venue_id'] ?? null)
+            ? $venues->where('id', $filters['venue_id'])
+            : $venues;
+
+        $targetVenueIds = $targetVenues->pluck('id');
+
+        // Query active month bookings for target venues to guarantee complete status accounting (including loading & unloading windows)
+        $utilizationBookings = Booking::whereIn('venue_id', $targetVenueIds)
+            ->where(function ($q) use ($monthEnd) {
+                $q->whereDate('start_date', '<=', $monthEnd)
+                    ->orWhereDate('load_at', '<=', $monthEnd);
+            })
+            ->where(function ($q) use ($monthStart) {
+                $q->whereDate('end_date', '>=', $monthStart)
+                    ->orWhereDate('unload_at', '>=', $monthStart);
+            })
+            ->where('status', '!=', 'cancelled')
+            ->get();
+
+        // Calculate per-venue utilisation and days breakdown (Ready, Terpakai [incl. Loading & Unloading], Maintenance)
+        $venueStats = $targetVenues->map(function (Venue $venue) use ($utilizationBookings, $monthStart, $monthEnd, $daysInMonth) {
+            $vBookings = $utilizationBookings
+                ->where('venue_id', $venue->id)
+                ->filter(fn (Booking $b) => $b->occupiedStartDate()->lte($monthEnd) && $b->occupiedEndDate()->gte($monthStart));
+
+            $terpakaiDaysSet = [];
+            $maintenanceDaysSet = [];
+            $fixDaysSet = [];
+            $eventDaysSet = [];
+            $loadingUnloadingDaysSet = [];
+
+            foreach ($vBookings as $b) {
+                $bStart = $b->occupiedStartDate()->max($monthStart);
+                $bEnd = $b->occupiedEndDate()->min($monthEnd);
+                $evStart = $b->start_date->copy()->startOfDay();
+                $evEnd = $b->end_date->copy()->startOfDay();
+
+                for ($d = $bStart->copy(); $d->lte($bEnd); $d->addDay()) {
+                    $dayKey = $d->day;
+                    if ($b->status === 'maintenance') {
+                        $maintenanceDaysSet[$dayKey] = true;
+                    } elseif (in_array($b->status, ['fix', 'tentative', 'hold'])) {
+                        $terpakaiDaysSet[$dayKey] = true;
+                        if ($d->betweenIncluded($evStart, $evEnd)) {
+                            $eventDaysSet[$dayKey] = true;
+                        } else {
+                            $loadingUnloadingDaysSet[$dayKey] = true;
+                        }
+                        if ($b->status === 'fix') {
+                            $fixDaysSet[$dayKey] = true;
+                        }
+                    }
+                }
+            }
+
+            // In case of overlap, active event booking takes precedence over maintenance
+            $terpakaiDays = count($terpakaiDaysSet);
+            $fixDays = count($fixDaysSet);
+            $pipelineDays = $terpakaiDays - $fixDays;
+            $loadingUnloadingDays = count(array_diff_key($loadingUnloadingDaysSet, $eventDaysSet));
+            $maintenanceDays = count(array_diff_key($maintenanceDaysSet, $terpakaiDaysSet));
+            $readyDays = max(0, $daysInMonth - $terpakaiDays - $maintenanceDays);
+            $totalCapacity = $readyDays + $terpakaiDays + $maintenanceDays; // strictly equals $daysInMonth
+
+            $utilizationRate = $totalCapacity > 0 ? round(($terpakaiDays / $totalCapacity) * 100, 1) : 0;
+            $maintenanceRate = $totalCapacity > 0 ? round(($maintenanceDays / $totalCapacity) * 100, 1) : 0;
+            $readyRate = $totalCapacity > 0 ? round(($readyDays / $totalCapacity) * 100, 1) : 0;
+
+            return [
+                'venue' => $venue,
+                'terpakai_days' => $terpakaiDays,
+                'fix_days' => $fixDays,
+                'pipeline_days' => $pipelineDays,
+                'loading_unloading_days' => $loadingUnloadingDays,
+                'maintenance_days' => $maintenanceDays,
+                'ready_days' => $readyDays,
+                'total_capacity' => $totalCapacity,
+                'utilization_rate' => $utilizationRate,
+                'maintenance_rate' => $maintenanceRate,
+                'ready_rate' => $readyRate,
+                'events_count' => $vBookings->whereIn('status', ['fix', 'tentative', 'hold'])->count(),
+                'is_unused' => ($terpakaiDays === 0),
+            ];
+        });
+
+        $totalTerpakaiDays = $venueStats->sum('terpakai_days');
+        $totalLoadingUnloadingDays = $venueStats->sum('loading_unloading_days');
+        $totalMaintenanceDays = $venueStats->sum('maintenance_days');
+        $totalReadyDays = $venueStats->sum('ready_days');
+        $totalCapacityDays = $totalReadyDays + $totalTerpakaiDays + $totalMaintenanceDays;
+
+        // Formula: Utilisasi Venue = Terpakai / (Ready + Terpakai + Maintenance) * 100%
+        $utilization = $totalCapacityDays > 0
+            ? round(($totalTerpakaiDays / $totalCapacityDays) * 100)
             : 0;
+
+        $readyPercent = $totalCapacityDays > 0
+            ? round(($totalReadyDays / $totalCapacityDays) * 100)
+            : 0;
+
+        $maintenancePercent = $totalCapacityDays > 0
+            ? round(($totalMaintenanceDays / $totalCapacityDays) * 100)
+            : 0;
+
+        $sortedVenues = $venueStats->sortByDesc('terpakai_days')->values();
+
+        $maxTerpakai = $sortedVenues->first()['terpakai_days'] ?? 0;
+        $mostUsedVenues = $maxTerpakai > 0
+            ? $sortedVenues->filter(fn ($v) => $v['terpakai_days'] === $maxTerpakai)->values()
+            : collect();
+
+        $unusedVenues = $sortedVenues->filter(fn ($v) => $v['terpakai_days'] === 0)->values();
+        $leastUsedVenues = $unusedVenues->isNotEmpty()
+            ? $unusedVenues
+            : ($sortedVenues->count() > 1 ? collect([$sortedVenues->last()]) : collect());
+
+        $utilizationData = [
+            'terpakaiDays' => $totalTerpakaiDays,
+            'loadingUnloadingDays' => $totalLoadingUnloadingDays,
+            'readyDays' => $totalReadyDays,
+            'maintenanceDays' => $totalMaintenanceDays,
+            'totalCapacityDays' => $totalCapacityDays,
+            'utilization' => $utilization,
+            'readyPercent' => $readyPercent,
+            'maintenancePercent' => $maintenancePercent,
+            'venues' => $sortedVenues,
+            'mostUsedVenues' => $mostUsedVenues,
+            'unusedVenues' => $unusedVenues,
+            'leastUsedVenues' => $leastUsedVenues,
+        ];
 
         $expectedEarningFix = $monthBookings->where('status', 'fix')->sum('price');
         $expectedEarningPipeline = $monthBookings->whereIn('status', ['hold', 'tentative'])->sum('price');
@@ -165,6 +288,7 @@ class DashboardController extends Controller
                 'expectedEarningPipeline' => $expectedEarningPipeline,
             ],
             'recentBookings' => $monthBookings->sortBy('start_date')->take(8),
+            'utilizationData' => $utilizationData,
         ]);
     }
 }
