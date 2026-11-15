@@ -1,58 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# VenueBook: Multi-Destination Venue Booking & Scheduling Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Enterprise scheduling and venue monitoring platform built for PT Taman Wisata Candi (TWC / InJourney) to coordinate event venue rentals across Candi Prambanan, Keraton Ratu Boko, and Candi Borobudur without scheduling collisions.
 
-## About Laravel
+- **Live Demo**: [https://venue.andiportofolio.my.id](https://venue.andiportofolio.my.id)
+- **Author**: Andi Ziyadh Ghafa Ramadhan ([Portfolio](https://andiportofolio.my.id) · [LinkedIn](https://linkedin.com/in/andighafa))
+- **Demo Credentials**:
+  - **Admin**: `admin@venuetracker.test` / `password` (Full access across all destinations)
+  - **Sales**: `sales.prambanan@venuetracker.test` / `password` (Scoped to Prambanan venues)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Why I Built This
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Before this platform, venue reservations across destination complexes (such as Lapangan Garuda for music festivals or Trimurti Open Stage for cultural performances) were coordinated through detached spreadsheets and chat threads.
 
-## Learning Laravel
+This caused frequent field problems:
+1. **Double-Booking Collisions**: Multiple sales teams confirming overlapping slots for the same venue without shared real-time status.
+2. **Ignored Setup / Breakdown Windows**: Event organizers only registered the main show hours, ignoring the 1 to 2 days required by sound, stage, and lighting vendors for setup (*load-in*) and teardown (*tear-down*).
+3. **Approval Bottlenecks**: No clear pipeline (`hold` → `tentative` → `fix` / `cancelled`) or audit history for unit management.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+I built this system to centralize booking availability, automate multi-phase conflict validation, handle tiered seating allocations, and restrict access based on destination units.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Core Architecture
 
-## Agentic Development
+### 1. Multi-Phase Conflict Detection
+Reservations reserve the complete operational footprint, not just event showtimes:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```text
+[ Load-in / Setup ] ──► [ Event Hours ] ──► [ Tear-down / Cleanup ]
+|◄──────────────── Total Operational Reservation Window ─────────────►|
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Before saving or updating a reservation, the system validates time overlaps atomically:
+```sql
+(new_load_in_start < existing_tear_down_end) AND (new_tear_down_end > existing_load_in_start)
+```
+If an active booking overlaps, the transaction rolls back and returns the conflicting event title and assigned PIC.
 
-## Contributing
+### 2. Ramayana Ballet Seating Grid
+For performance auditoriums (Prambanan Open Stage and Trimurti Indoor Theater):
+- Tiered layout: **VIP**, **Special**, **Class 1**, and **Class 2**.
+- Row and column coordinates enforced with a composite unique key on `(booking_id, seat_id)` to prevent duplicate seat allocations for the same show.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Destination-Scoped RBAC
+- **Sales Staff**: Restricted to their designated destination (e.g. Prambanan sales only manage bookings at Prambanan).
+- **Unit Admin**: Cross-destination overview to review, approve, reassign PICs, or adjust venue schedules.
+- **Superadmin**: Global management, user credential control, master venue configurations, and audit exports.
 
-## Code of Conduct
+### 4. Reporting & Live Status
+- Filtered exports (Excel/CSV) segmented by date ranges and destination.
+- Notification ledger (`NotificationRead` model) to track state changes and approvals per user.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Tech Stack
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Backend**: Laravel 13 (PHP 8.3), Eloquent ORM, Seeders, Form Requests
+- **Frontend**: Blade Components, Tailwind CSS v4, Vite, Flatpickr
+- **Database**: MySQL 8.0 (indexed date ranges, composite constraints)
+- **Infrastructure**: Ubuntu Linux VPS, Nginx, PHP-FPM 8.3, Let's Encrypt SSL
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Local Development
+
+### Requirements
+- PHP 8.3+
+- Composer
+- Node.js (v18+) & npm
+- MySQL 8.0+
+
+### Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/andiZghafa/VenueBook.git
+   cd VenueBook
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+   Update `.env` with your database credentials:
+   ```ini
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=venue_tracker
+   DB_USERNAME=your_db_user
+   DB_PASSWORD=your_db_password
+   ```
+
+4. **Run migrations and seed demo data**:
+   ```bash
+   php artisan migrate --seed
+   ```
+
+5. **Build assets and start development server**:
+   ```bash
+   npm run build
+   php artisan serve
+   ```
+   Open `http://localhost:8000` and sign in with `admin@venuetracker.test` / `password`.
