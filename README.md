@@ -5,7 +5,6 @@
 - **Live Demo**: [https://venue.andiportofolio.my.id](https://venue.andiportofolio.my.id)
 - **Author**: Andi Ziyadh Ghafa Ramadhan ([Portfolio](https://andiportofolio.my.id) · [LinkedIn](https://linkedin.com/in/andighafa))
 - **Demo Credentials**:
-  - **Admin**: `admin@venuetracker.test` / `password` (Full access across all destinations)
   - **Sales**: `sales.prambanan@venuetracker.test` / `password` (Scoped to Prambanan venues)
 
 ---
